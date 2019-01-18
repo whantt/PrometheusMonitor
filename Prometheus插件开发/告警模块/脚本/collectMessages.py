@@ -88,7 +88,7 @@ def hander_session():
             try:
                 alert_job = i['labels']['job']
             except:
-                alert_job = "no job"
+                alert_job = "NoJob"
             try:
                 startat = i['startsAt']
             except:
@@ -97,10 +97,18 @@ def hander_session():
                 summary123 = i['annotations']['summary']
             except:
                 summary123 = i['annotations']['message']
+
             try:
                 instances123 = i['labels']['instance']
             except:
-                instances123 = i['annotations']['description']
+                instances123 = 'NoInstance'
+
+            try:
+                name = i['labels']['name']
+                instances123 = name + '_' + instances123
+            except:
+                name = 'NoName'
+
             try:
                 describetions = i['annotations']['description']
             except:
