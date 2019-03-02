@@ -28,6 +28,14 @@ from prometheus_client import Gauge,start_http_server
 import random
 from prometheus_client import Gauge
 import time
+import consul
+
+c = consul.Consul('172.16.0.143')
+
+# poll a key for updates
+index = None
+# in another process
+c.kv.put('foo', 'bar')
 a = Gauge('A_test_monitor', 'Description of gauge')
 a.set(random.random()) #value自己定义,但是一定要为 整数或者浮点数
 g = Gauge('B_test_monitor', 'Description of gauge',['mylabelname'])
@@ -36,6 +44,7 @@ g = Gauge('B_test_monitor', 'Description of gauge',['mylabelname'])
 #在给lable定义value的时候也要注意,mylablename 这里是一个方法,或者说是一个变量了,一定要注意.
 start_http_server(8000)
 while True:
+    index, data = c.kv.get('foo', index=index)
     g.labels(mylabelname='wmltest').set(random.randint(1, 10))
     time.sleep(3)
 

@@ -16,6 +16,14 @@
         height: 65px;
     }
 
+    .title_refresh {
+        position: absolute;
+        width: 80px;
+        right: 10px;
+        top: 4px;
+        height: 65px;
+    }
+
     .head_title h3 {
         color: gray;
         position: absolute;

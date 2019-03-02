@@ -4,6 +4,7 @@ import sys
 import json
 from PrometheusService import create_rules_model, get_rule, get_rule_detail, update_rules_model, delete_rules_model
 import PrometheusConfig
+import os
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -94,6 +95,12 @@ def get_rules_detail():
     return resp
 
 
+@app.route('/', methods=['GET'])
+def open_web():
+    # return render_template('rulesWeb.html')
+    return app.send_static_file('pages/rulesWeb.html')
+
+
 @app.route('/prometheus/AddRules', methods=['GET'])
 def open_html():
     # return render_template('rulesWeb.html')
@@ -115,6 +122,19 @@ def get_info():
     except Exception, e:
         print e
     return json.dumps(result)
+
+
+@app.route('/prometheus/refresh', methods=['POST'])
+def refresh():
+    try:
+        # os.system("curl -X POST --connect-timeout 10 -m 20 http://172.16.0.143:9090/-/reload >/dev/null")
+        rs = os.popen("curl -X POST --connect-timeout 10 -m 20 http://127.0.0.1:9090/-/reload").read()
+        if rs.strip() != '':
+            return json.dumps("refresh fail, please check the prometheus.yml")
+        return json.dumps("refresh success!")
+    except Exception, e:
+        print e
+        return json.dumps("refresh fail")
 
 if __name__ == '__main__':
     app.run("0.0.0.0", 8888)

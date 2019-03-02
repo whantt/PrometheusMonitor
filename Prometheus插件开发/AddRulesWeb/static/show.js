@@ -137,3 +137,23 @@ $(document).ready(function(){
             }
         })
     }
+
+    function refreshRule(){
+
+        var x = confirm("是否确认刷新");
+        if(x ==false){
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: "/prometheus/refresh",
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                alert(result);
+            }
+        })
+    }
