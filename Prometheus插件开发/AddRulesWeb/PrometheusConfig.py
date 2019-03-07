@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-filepath = '/tmp/rules/'
+filepath = '/etc/prometheus/rules.d/'
 
-services = ['local-234', 'cticloud', 'sipRouter']
+services = ['cticloud', 'sipRouter']
 
 alarms = ['warning', 'average', 'high', 'disaster']
 

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+
+    <div style="position: absolute; top: 8%; left: 2%; height: 8%; width: 15%">
+        <select id="grouplist" style="height: 100%; width: 100%; outline: none">
+            <option selected style="text-align: center" value="">选择主机组</option>
+            {% for g in GroupList %}
+                <option style="text-align: center" value="{{ g }}"> {{ g }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="position: absolute;height: 80%; width: 100%; top: 16%;">
+        <div style="position: absolute; top: 6%; left: 2%; height: 10%; width: 30%">
+            <label style="float: left; padding: 1px; height: 100%; border: 1px solid grey; background-color: grey; color: white">实例</label>
+            <input id="hostInstance" style="float: left; height: 100%; width: 70%; border: 1px solid grey; outline: none;" type="text" placeholder="   设置ip:port....">
+        </div>
+
+        <div style="position: absolute; top: 6%; left: 31%; height: 10%; width: 30%">
+            <label style="float: left; padding: 1px; height: 100% ;border: 1px solid grey; background-color: grey; color: white">主机名</label>
+            <input id="hostName" style="height: 100%; width: 70%; float: left; border: 1px solid grey; outline: none;" type="text" placeholder="   设置主机名....">
+        </div>
+
+        <div style="position: absolute; top: 6%; left: 60%; height: 10%; width: 20%">
+            <select id="hostType" style="float: left; height: 100%; width: 100%; outline: none">
+                <option selected style="text-align: center" value="">选择监控类型</option>
+                <option style="text-align: center" value="api">API</option>
+                <option style="text-align: center" value="system">SYSTEM</option>
+                <option style="text-align: center" value="script">SCRIPT</option>
+            </select>
+        </div>
+
+        <div style="position: absolute; top: 6%; left: 82%; height: 10%; width: 2%; outline: none">
+            <button type="button" onclick="addLine()" style="display: block ;background-color: #0e9aef;color: white; border-radius: 22px; height: 100%; width: 100%; outline: none"> + </button>
+        </div>
+
+        <div id="hostAdd1" style="position: absolute; top: 23%; left: 2%; height: 60%; width: 98%">
+            <div id="hostAdd" style="height: 16%; width: 40%; float: left; display: none">
+            </div>
+            <div style="float: left; height: 100% ; width: 50%">
+                <label style="float: left; padding: 2px; background-color: grey; font-size: 20px; color: white;">预览</label>
+                <textarea id="hostInfo" style="float: left; width: 80%; height: 100%; outline: none"></textarea>
+            </div>
+        </div>
+        <div style="position: absolute; top: 90%; left: 93%; height: 13%; width: 6%">
+            <button type="button" onclick="submitHosts()" style="width: 100%; height: 100%; background-color: darkseagreen; border: 1px solid darkseagreen; color: white; outline: none">提交</button>
+        </div>
+    </div>
+</body>
+
+    <script src="/static/js/jquery-2.1.1.js"></script>
+
+    <script>
+        var index = 0;
+        var extendLabel = "";
+
+        $("#hostInstance").bind('input propertychange',function () {
+            show();
+        });
+
+        $("#hostName").bind('input propertychange',function () {
+            show();
+        });
+
+        $("#hostType").change(function(){
+            show();
+        });
+
+        function show(){
+            var ip = $("#hostInstance").val();
+            var hostName = $("#hostName").val();
+            var hostType = $("#hostType").val();
+            var lable = "";
+
+
+            if("" == ip.trim()){
+                alert("请先设置实例地址,端口");
+                return 0;
+            }else{
+                var info = '[{"targets": ["' + ip.trim() + '"]';
+
+                if("" != hostName.trim()){
+                    if ("" == lable){
+                        lable = '"name":"' + hostName + '"' ;
+                    }else{
+                        lable = lable + ',"name":"' + hostName + '"';
+                    }
+                }
+
+                if("" != hostType.trim()){
+                    if ("" == lable){
+                        lable = '"monitortype":"' + hostType + '"' ;
+                    }else{
+                        lable = lable + ',"monitortype":"' + hostType + '"';
+                    }
+                }
+
+                if ("" != lable && "" != extendLabel.trim()){
+                    lable = lable + ',' + extendLabel;
+                }else if("" == lable && "" != extendLabel.trim()){
+                    lable = extendLabel;
+                }
+
+                if("" != lable){
+                    info = info + ',"labels":{' + lable + '}';
+                }
+                info = info + '}]';
+                $("#hostInfo").val(info);
+            }
+            return 1;
+        }
+
+        function addLine(){
+
+            document.getElementById("hostAdd").style.display = "block";
+
+            $("#hostAdd").append('<input id="addLabel' + index + '" style="display: block ;background-color: cornflowerblue; color: white; height: 100%; width: 20%; float: left; border: 1px solid white; outline: none;" type="text" placeholder="   设置label....">');
+            $("#hostAdd").append('<input id="addLabelContent' + index + '" style="display: block ;background-color: #b4dbed; color: white; height: 100%; width: 60%; float: left; border: 1px solid white; border-left: 0; outline: none;" type="text" placeholder="   设置label内容....">');
+            $("#hostAdd").append('<button id="buttonR' + index + '" type="button" onclick="addExtendLabel(\'addLabel' + index + '\',\'addLabelContent'+ index +'\', this)"  id="right' + index +'" style="display: block ; float: left; margin-left: 5px; background-color: darkseagreen; color: white; border-radius: 22px; border: 0; height: 100%; width: 5%; outline: none"> √ </button>');
+            $("#hostAdd").append('<button id="buttonW' + index + '" type="button" onclick="delExtendLabel(\'addLabel' + index + '\',\'addLabelContent'+ index +'\', \'buttonR' + index + '\',\'buttonW'+ index +'\')" id="wrong' + index +'" style="display: block ;float: left; margin-left: 5px; background-color: black; color: white; border-radius: 22px; border: 0; height: 100%; width: 5%; outline: none"> × </button>');
+            index += 1;
+        }
+
+        function addExtendLabel(node, node1, thisnode){
+
+            var label = $("#"+node).val();
+            var content = $("#"+node1).val();
+
+            if("" == label || "" == content){
+                alert("参数不能为空!");
+                return;
+            }
+
+            if ("" == extendLabel){
+                extendLabel = '"'+ label +'": "' + content + '"'
+            }else{
+                extendLabel = extendLabel + ',' + '"'+ label +'": "' + content + '"'
+            }
+
+            var rs = show();
+            if (1 == rs){
+                thisnode.style.display = "none";
+            }else{
+                extendLabel = "";
+            }
+        }
+
+        function delExtendLabel(node1, node2, node3, node4){
+            document.getElementById(node1).style.display="none";
+            document.getElementById(node2).style.display="none";
+            document.getElementById(node3).style.display="none";
+            document.getElementById(node4).style.display="none";
+
+            extendLabel = "";
+            var labelx = "";
+            var contentx = "";
+            var i = 0;
+            while (i < index){
+                if(document.getElementById("addLabel"+i).style.display == 'none'){
+                    i++;
+                    continue;
+                }
+                labelx = $("#addLabel"+i).val();
+                contentx = $("#addLabelContent"+i).val();
+                if("" == labelx || "" == contentx){
+                    i++;
+                    continue;
+                }
+
+                if ("" == extendLabel){
+                    extendLabel = '"'+ labelx +'": "' + contentx + '"';
+                }else{
+                    extendLabel = extendLabel + ',' + '"'+ labelx +'": "' + contentx + '"';
+                }
+                i++;
+            }
+
+            while (i < index){
+                if(document.getElementById("addLabel"+i).style.display == 'none'){
+                    i++;
+                    continue;
+                }else{
+                    break;
+                }
+
+            }
+
+            var rs = checkStatus();
+            if(0 == rs){
+                document.getElementById("hostAdd").style.display = "none";
+            }
+
+            show();
+        }
+
+        function checkStatus(){
+            var rs = 0;
+            var i = 0;
+            while (i < index){
+                if(document.getElementById("addLabel"+i).style.display == 'none'){
+                    i++;
+                }else{
+                    rs=1;
+                    break;
+                }
+            }
+            return rs;
+        }
+
+
+        function submitHosts(){
+            var group = $("#grouplist").val();
+            var content = $("#hostInfo").val();
+            if("" == group){
+                alert("请选择数组!");
+                return;
+            }
+
+            if("" == content){
+                alert("请填写主机信息!");
+                return;
+            }
+
+            jQuery.ajax({
+                type: "POST",
+                url: "addHConfig",
+                dataType: 'json',
+                data : {"info": content, "group": group},
+                async: false,
+                error: function () {
+                    alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                    return false;
+                },
+                success: function (result) {
+                    alert(result);
+                }
+            })
+
+        }
+
+
+    </script>
+
+</html>
