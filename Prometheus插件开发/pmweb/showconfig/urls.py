@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'delGroupInfo$', views.delGroupInfo, name='updateGroupInfo'),
     url(r'showHost$', views.showHost, name='showHost'),
     url(r'showHostInfo$', views.showHostInfo, name='showHostInfo'),
+    url(r'delHostInfo', views.delHostInfo, name='delHostInfo'),
 ]

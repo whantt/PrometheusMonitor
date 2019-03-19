@@ -173,7 +173,12 @@ def updateHost(group, host, name):
 #     return True
 
 
-def delHost(hostid):
+def delHost(_file):
+    os.system("rm -rf " + _file)
+
+
+
+def delHosts(hostid):
     try:
         ht = Host.objects.filter(hid=hostid)
         host = ht[0].name

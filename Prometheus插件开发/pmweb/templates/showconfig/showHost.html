@@ -180,14 +180,6 @@
                 var htmlg = '';
                 for(var index in result['value']){
 
-{#                            _rs['hid'] = ht[i].hid#}
-{#        _rs['instance'] = ht[i].instance#}
-{#        _rs['name'] = ht[i].name#}
-{#        _rs['groupid'] = ht[i].groupid#}
-{#        _rs['monitortype'] = ht[i].monitortype#}
-{#        _rs['label'] = ht[i].label#}
-
-
                     var value = "'" + result['value'][index]['hid'] + "'";
                     value = value + ", '" + result['value'][index]['name'] + "'";
                     value = value + ", '" + result['value'][index]['instance'] + "'";
@@ -203,7 +195,7 @@
                     htmlg = htmlg + '<td width="10%">' + result['value'][index]['monitortype'] + '</td>';
                     htmlg = htmlg + '<td width="45%">' + result['value'][index]['label'] + '</td>';
 {#                    htmlg = htmlg + '<td width="40%">' + result['value'][index]['match'] + '</td>';#}
-                    htmlg = htmlg + '<td width="5%"><button type="button" onclick="delGroup(\''+result['value'][index]['hid']+'\')">删除</button></td>';
+                    htmlg = htmlg + '<td width="5%"><button type="button" onclick="delHost(\''+result['value'][index]['hid']+'\')">删除</button></td>';
                     htmlg = htmlg + '</tr>';
                 }
                 $("#groupinfos").html(htmlg);
@@ -228,6 +220,30 @@
 
             }
         })
+    }
+
+
+    function delHost(hid){
+        var x = confirm("是否确认删除该实例");
+        if (x == false) {
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: "delHostInfo",
+            dataType: 'json',
+            data: {"hid": hid},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                window.location.reload();
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+        });
     }
 
 </script>

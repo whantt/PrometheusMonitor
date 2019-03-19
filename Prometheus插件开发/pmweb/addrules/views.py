@@ -215,7 +215,6 @@ def addAllRules(request):
             rs = ''
             # 数据插入成功
             for i in range(0, len(ht)):
-                # FIXME 创建每台实例的告警规则文件
                 rname = name + ht[i].instance.replace('.', '').replace(':', '_') + '_rule'
                 rexper = exper.replace('$instance', ht[i].instance)
                 alert = name + ht[i].instance.replace('.', '').replace(':', '_')

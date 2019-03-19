@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from pmweb.settings import prometheusPath
 from addconfig.models import Group, Host, PrometheusConfig
 from addconfig.pathFunction import createHost, createGroup, updateHost, updateGroup, delHost
+from addrules.models import PrometheusApplication, PrometheusRules, PrometheusRulesModel
 import datetime
 import random
 import json
@@ -152,3 +153,90 @@ def showHostInfo(request):
         rs.append(_rs)
     result['value'] = rs
     return HttpResponse(json.dumps(result))
+
+
+def delHostInfo(request):
+
+    if request.method == 'POST':
+        try:
+            hid = request.POST.get('hid', '')
+        except Exception, e:
+            print e
+            HttpResponse(json.dumps(u'参数有误!'))
+    else:
+        HttpResponse(json.dumps(u'请发送POST请求!'))
+
+    try:
+        ht = Host.objects.filter(hid=hid)
+        groupname = ht[0].groupid
+        hostname = ht[0].name
+
+        pc = PrometheusConfig.objects.filter()
+        job_path = pc[0].job_path
+        if not job_path.endswith('/'):
+            job_path += '/'
+        job_path += groupname + '.yml'
+
+        rule_path = pc[0].rule_files_path
+        if not rule_path.endswith('/'):
+            rule_path += '/'
+        rule_path += groupname + '/' + hostname + '/'
+
+    except Exception, e:
+        print e
+        HttpResponse(json.dumps(u'删除数据信息获取失败!'))
+
+    rs = ""
+    # 删除所有此主机的告警规则
+    # try:
+    pr = PrometheusRules.objects.filter(hid=hid)
+    for i in range(0, len(pr)):
+        try:
+            filename = rule_path + pr[i].name + '_rule.yml'
+            delHost(filename)
+        except Exception, e:
+            print e
+            rs += rule_path + u'文件删除失败\n'
+            continue
+
+    # 删除主机对应的所有告警规则
+    try:
+        PrometheusRules.objects.filter(hid=hid).delete()
+    except Exception, e:
+        rs += u'数据库中告警规则信息删除失败\n'
+        print e
+
+    # 删除主机
+    try:
+        Host.objects.filter(hid=hid).delete()
+    except Exception, e:
+        rs += u'数据库中主机信息删除失败\n'
+        print e
+
+    # 重新生成targets文件
+    try:
+        print 3333333
+        print groupname
+        ht = Host.objects.filter(groupid=groupname)
+        x = []
+        for index in range(0, len(ht)):
+            host = {}
+            target_host = []
+            target_host.append(ht[index].instance)
+            host['targets'] = target_host
+            host['labels'] = eval(ht[index].label)
+            x.append(host)
+        print 1111111
+        print job_path
+        print 2222222
+        with open(job_path, 'w')as f:
+            f.write(json.dumps(x, ensure_ascii=False))
+    except Exception, e:
+        print e
+        rs += u'targets文件重新生成失败\n'
+    print rs
+    if "" == rs:
+        rs = u'删除成功'
+    print 1111
+    print rs
+    return HttpResponse(json.dumps(rs))
