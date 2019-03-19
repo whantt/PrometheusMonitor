@@ -45,7 +45,7 @@ class PrometheusRules(models.Model):
     expr = models.CharField(max_length=1000, null=False, verbose_name=u'表达式')
     hid = models.CharField(max_length=100, null=False, verbose_name=u'主机id')
     status = models.CharField(max_length=100, null=False, verbose_name=u'状态')
-    # service = models.CharField(max_length=100, null=False, verbose_name=u'服务')
+    modelid = models.CharField(max_length=100, null=False, verbose_name=u'模板id')
 
     def __unicode__(self):
         return self.name

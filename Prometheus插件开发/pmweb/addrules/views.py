@@ -5,11 +5,28 @@ from pmweb.settings import prometheusPath
 from addconfig.models import Group, Host, PrometheusConfig
 from addconfig.pathFunction import createHost, createGroup, updateHost, updateGroup, delHost
 from models import PrometheusApplication, PrometheusRulesModel, PrometheusRules
+from ruleFunction import write_file
 import datetime
 import random
 import json
 import os
 import sys
+
+
+redis_fixed_text = """#{'name': '{{ name }}', 'service': '{{ service }}', 'alert': '{{ alert }}', 'expr': '{{ expr }}', '_for': '{{ for }}', 'level': '{{ level }}', 'summary': '{{ summary }}', 'description': '{{ description }}'}
+groups:
+- name: {{ name }}
+  rules:
+  - alert: {{ alert }}
+    expr: {{ expr }}
+    for: {{ for }}
+    labels:
+      level: "{{ level }}"
+      service: "{{ service }}"
+    annotations:
+      summary: "{{ summary }}"
+      description: "{{ description }}"
+"""
 
 
 def createRules(request):
@@ -153,14 +170,10 @@ def addAllRules(request):
         try:
             rmodel = request.POST.get('rmodel', '')
             hosts = request.POST.get('hosts', '')
-            print rmodel
-            print hosts
-
 
             rs = []
             # 获取模板信息
             pr = PrometheusRulesModel.objects.filter(rid=rmodel)
-            print pr
             modeid = pr[0].rid
             name = pr[0].name
             service = pr[0].service
@@ -178,21 +191,49 @@ def addAllRules(request):
                 rule_path += '/'
 
             # 获取添加主机信息
-            _hosts = hosts.split(',')
-            print _hosts
+            hts = hosts.split(',')
+
+            # 提交数据去重,去空
+            _hosts = []
+            for i in hts:
+                if i not in _hosts:
+                    if "" != i.strip():
+                        _hosts.append(i)
+
             ht = Host.objects.filter(hid__in=_hosts)
-            print ht
+            save_list = []
             for i in range(0, len(ht)):
-                print ht[i].hid, ht[i].name, ht[i].instance, ht[i].groupid
-                # FIXME 创建每台实例的告警规则文件 以及数据库batch
+                # FIXME 插入每个告警规则
+                rname = name + ht[i].instance.replace('.', '').replace(':', '_')
+                rexper = exper.replace('$instance', ht[i].instance)
+                rid = 'R' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ''.join(str(random.choice(range(10))) for _ in range(10))
+                prs = PrometheusRules(rid=rid, name=rname, service=service, fortime=fortime, model=model, description=description,level=level,application=application,expr=rexper,hid=ht[i].hid, status='0',modelid=modeid)
+                # print ht[i].hid, ht[i].name, ht[i].instance, ht[i].groupid
+                save_list.append(prs)
+            PrometheusRules.objects.bulk_create(save_list)
 
+            rs = ''
+            # 数据插入成功
+            for i in range(0, len(ht)):
+                # FIXME 创建每台实例的告警规则文件
+                rname = name + ht[i].instance.replace('.', '').replace(':', '_') + '_rule'
+                rexper = exper.replace('$instance', ht[i].instance)
+                alert = name + ht[i].instance.replace('.', '').replace(':', '_')
+                filename = rule_path + ht[i].groupid + '/' + ht[i].name + '/' + rname + '.yml'
 
-            # for i in range(0, len(pr)):
-            #     _rs = {}
-            #     _rs['id'] = pr[i].rid
-            #     _rs['name'] = pr[i].name
-            #     rs.append(_rs)
-
+                rule = redis_fixed_text.replace('{{ name }}', rname)
+                rule = rule.replace('{{ alert }}', alert)
+                rule = rule.replace('{{ expr }}', rexper)
+                rule = rule.replace('{{ for }}', fortime)
+                rule = rule.replace('{{ level }}', level)
+                rule = rule.replace('{{ summary }}', model)
+                rule = rule.replace('{{ description }}', description)
+                rule = rule.replace('{{ service }}', service)
+                result = write_file(filename, rule)
+                if result == 1:
+                    rs += ht[i].instance + ','
+            if "" == rs:
+                rs = u'添加成功'
             return HttpResponse(json.dumps(rs))
         except Exception, e:
             print e
