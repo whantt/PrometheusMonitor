@@ -8,6 +8,7 @@ import random
 import json
 import os
 import sys
+from pathFunction import createGroup, createHost, updateGroup, updateHost, delHost
 
 modelConfig="""
 ## {{ name }}
@@ -34,6 +35,7 @@ scrape_configs:
 jobConfig = """
   - job_name: '{{ name }}'
     scrape_interval: {{ scrape_interval }}
+    honor_labels: true
     metrics_path: '{{ metrics_path }}'
     {{ params }}
     {{ type }}
@@ -132,9 +134,12 @@ def addGConfig(request):
             if len(pc) > 0:
                 return HttpResponse(json.dumps(u'目标' + name + u'已存在'))
 
+            flag = createGroup(name)
+            if flag is False:
+                return HttpResponse(json.dumps(u'添加失败,组目录创建失败!'))
+
             pc = Group(name=name, scrape_interval=interval, scheme=type, insecure_skip_verify=check, metrics_path=uri, match=match)
             pc.save()
-
 
             return HttpResponse(json.dumps(u'添加成功'))
         except Exception, e:
@@ -153,15 +158,20 @@ def addHConfig(request):
             info = request.POST.get('info', '')
             group = request.POST.get('group', '')
 
-            value = eval(info)
+            pc = PrometheusConfig.objects.filter()
+            path = pc[0].rule_files_path
+            if not path.endswith('/'):
+                path += '/'
 
+            value = eval(info)
+            flag = True
             for item in value:
                 target = item["targets"][0]
                 try:
                     name = item['labels']['name']
                 except Exception, e:
                     print e
-                    name = ''
+                    name = target
 
                 try:
                     type = item['labels']['monitortype']
@@ -169,22 +179,26 @@ def addHConfig(request):
                     print e
                     type = ''
 
-                labels = item['labels']
-                id = 'H' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ''.join(str(random.choice(range(10))) for _ in range(10))
-                ht = Host(hid=id, instance=target, name=name, groupid=group, monitortype=type, label=labels )
-                save_list.append(ht)
-            Host.objects.bulk_create(save_list)
+                # os.system('mkdir -p ' + path + group + '/' + name)
 
-            pc = PrometheusConfig.objects.filter()
-            path = pc[0].rule_files_path
-            if not path.endswith('/'):
-                path += '/'
+
+                flag = createHost(name, group)
+                if flag is False:
+                    break
+                labels = json.dumps(item['labels'], ensure_ascii=False)
+                id = 'H' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ''.join(str(random.choice(range(10))) for _ in range(10))
+                ht = Host(hid=id, instance=target, name=name, groupid=group, monitortype=type, label=labels)
+                save_list.append(ht)
+                # flag = createHost(name, group)
+                # if flag is False:
+                #     break
+            if flag is True:
+                Host.objects.bulk_create(save_list)
 
             jobfile = pc[0].job_path
             if not jobfile.endswith('/'):
                 jobfile += '/'
 
-            os.system('mkdir -p ' + path + group + '/' + name)
             os.system('mkdir -p ' + jobfile)
 
             ht = Host.objects.filter(groupid=group)
@@ -196,10 +210,7 @@ def addHConfig(request):
                 host['targets'] = target_host
                 host['labels'] = eval(ht[index].label)
                 x.append(host)
-                # print json.dumps(host, ensure_ascii=False)
 
-            # print json.dumps(x, ensure_ascii=False)
-            # os.system('echo "' + json.dumps(x, ensure_ascii=False) + '" > ' + path + group + '.yml')
             with open(jobfile + group + '.yml', 'w')as f:
                 f.write(json.dumps(x, ensure_ascii=False))
 

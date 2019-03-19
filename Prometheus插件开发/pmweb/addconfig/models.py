@@ -38,7 +38,7 @@ class Group(models.Model):
 class Host(models.Model):
     hid = models.CharField(max_length=100, unique=True, null=False, primary_key=True)
     instance = models.CharField(max_length=20, null=False, unique=True)
-    name = models.CharField(max_length=100, null=False, unique=True)
+    name = models.CharField(max_length=100, null=False)
     groupid = models.CharField(max_length=100, null=False)
     monitortype = models.CharField(max_length=100, null=False)
     # group = models.ManyToManyField(Group)

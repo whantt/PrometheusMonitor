@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="">
+    <div id="createApplication" style="width: 100%; background-color: black">
+        <label style="color: white; padding: 5px;">应用集:</label>
+        <input id="appName" type="text" style="margin: 1px; padding: 10px; width: 20%; height: 100%; border: 0" onclick="" value="">
+        <button type="button" onclick="submitApp()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
+    </div>
+
+    <div style="height: 70%; width: 100%; margin-top: 30px;">
+        <ul style="padding: 0; margin: 0; list-style: none">
+            <li style="margin: 4px">
+                <label>名称: </label>
+                <input id="rname" type="text" style="outline: none; margin: 1px; padding: 10px; width: 30%; height: 100%; border: 1px solid lightgrey" value="">
+                <button type="button" onclick="submitApp()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
+
+            </li>
+            <li style="margin: 4px">
+                <label>服务: </label>
+                <input id="rservice" type="text" style="outline: none; margin: 1px; padding: 10px; width: 20%; height: 100%; border: 1px solid lightgrey" value="">
+            </li>
+            <li style="margin: 4px">
+                <label>时间: </label>
+                <input id="rtime" type="text" style="outline: none; margin: 1px; padding: 10px; width: 20%; height: 100%; border: 1px solid lightgrey" value="">
+            </li>
+            <li style="margin: 4px">
+                <label>模板: </label>
+                <input id="rmode" type="text" style="outline: none; margin: 1px; padding: 10px; width: 70%; height: 100%; border: 1px solid lightgrey" value="">
+            </li>
+
+            <li style="margin: 4px">
+                <label>描述: </label>
+                <input id="rdes" type="text" style="outline: none; margin: 1px; padding: 10px; width: 70%; height: 100%; border: 1px solid lightgrey" value="">
+            </li>
+
+            <li style="margin: 4px">
+                <label>等级: </label>
+                <select id="rlevel" style="margin: 3px; width: 20%; font-size: 12px; padding: 10px;  outline: none">
+                    <option selected style="text-align: center;margin: 3px; padding: 20px;" value="">选择告警等级</option>
+                    <option style="text-align: center" value="average">average</option>
+                    <option style="text-align: center" value="disaster">disaster</option>
+                </select>
+            </li>
+
+            <li style="margin: 4px">
+                <label>应用: </label>
+                <select id="sapplication" style="margin: 3px; width: 20%; font-size: 12px; padding: 10px;  outline: none">
+
+                </select>
+            </li>
+
+            <li style="margin: 4px">
+                <label>规则: </label>
+                <textarea id="rexpr" style="width: 70%; outline: none" rows="10"></textarea>
+{#                <input type="text" style="margin: 1px; padding: 10px; width: 20%; height: 100%; border: 1px solid lightgrey" value="">#}
+            </li>
+        </ul>
+    </div>
+
+</body>
+
+<script src="/static/js/jquery-2.1.1.js"></script>
+
+<script>
+
+    //获取当前prometheus的配置信息
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "POST",
+            url: "getApplication",
+            dataType: 'json',
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                $("#sapplication").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="">选择应用集</option>');
+                for(i in result){
+                    $("#sapplication").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="'+result[i].id+'">'+result[i].name+'</option>');
+                }
+
+            }
+        })
+    });
+
+
+    function submitApp(){
+        var name = $("#rname").val();
+        var service = $("#rservice").val();
+        var time = $("#rtime").val();
+        var mode = $("#rmode").val();
+        var des = $("#rdes").val();
+        var level = $("#rlevel").val();
+        var application = $("#sapplication").val();
+        var expr = $("#rexpr").val();
+{#alert(name + ',' + service + ',' + time + ',' + mode + ',' + des + ',' + level + ',' + application + ',' + expr);#}
+
+        jQuery.ajax({
+            type: "POST",
+            url: "addRules",
+            dataType: 'json',
+            data: {"name": name, "service": service, "time": time, "mode": mode, "des": des, "level": level, "application": application,"expr": expr},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+
+
+    function submitRules(){
+        var name = $("#appName").val();
+        jQuery.ajax({
+            type: "POST",
+            url: "addApplicaiton",
+            dataType: 'json',
+            data: {"name": name},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+</script>
+
+</html>

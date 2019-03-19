@@ -16,12 +16,16 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from pmweb import settings
-
+from . import views
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'toMain/', views.toMain, name='toMain'),
+    url(r'first/', views.firstPage, name='firstPage'),
     url(r'^prometheusconfig/', include('addconfig.urls')),
-    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', { 'document_root': settings.STATIC_ROOT,
+    url(r'^prometheusinfo/', include('showconfig.urls')),
+    url(r'^addrule/', include('addrules.urls')),
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT,
         }),
 ]

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
+    <div style="width: 100%; height: 40px; margin: 20px">
+{#        <label>应用集: </label>#}
+        <select id="sapplication" style="float: left; margin: 3px; width: 20%; font-size: 15px; padding: 10px; outline: none">
+
+        </select>
+
+        <select id="srule" style="float: left; margin: 3px 3px 3px 10px; width: 20%; font-size: 15px; padding: 10px;  outline: none;display: none ">
+
+        </select>
+
+        <button type="button" onclick="submitRule()" style="outline: none; background-color: grey; color: white; border-radius: 5px; border: 0; padding: 3px 15px 3px 15px; margin-left: 20px">提交</button>
+    </div>
+
+    <div style=" width: 100%;height: 80%;">
+        <div style="border: 5px solid #CCC; margin: 20px; float: left; height: 80%; width: 40%;">
+            <div style="height: 92%; width: 100%; overflow: auto">
+                <ul id="srhosts" style=" width: 100%; list-style: none; margin: 5px 0 0 20px; padding: 0;">
+
+                </ul>
+            </div>
+{#            <ul id="srhosts" style="height: 100%; width: 100%; overflow: auto; list-style: none; margin: 5px 0 0 20px; padding: 0;">#}
+{##}
+{#            </ul>#}
+        </div>
+
+        <a href="#" style="float: left; margin-top: 15%; text-decoration: none"><<=</a>
+
+        <div style="border: 5px solid #CCC; margin: 20px;float: left; height: 80%; width: 40%;">
+            <select id="rgroup" style="border: 1px solid #CCC; margin: 0;padding: 0; width: 100%;height: 8%;font-size: 15px; outline: none">
+            </select>
+            <div style="height: 92%; width: 100%; overflow: auto">
+                <ul id="rhosts" style=" width: 100%; list-style: none; margin: 5px 0 0 20px; padding: 0;">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="/static/js/jquery-2.1.1.js"></script>
+<script>
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "POST",
+            url: "getApplication",
+            dataType: 'json',
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                $("#sapplication").append('<option style="float: left; text-align: center;margin: 3px; padding: 20px;" value="">选择应用集</option>');
+                for(i in result){
+                    $("#sapplication").append('<option style="float: left; text-align: center;margin: 3px; padding: 20px;" value="'+result[i].id+'">'+result[i].name+'</option>');
+                }
+
+            }
+        })
+    });
+
+
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "POST",
+            url: "getAllGroups",
+            dataType: 'json',
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                $("#rgroup").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="">选择主机组</option>');
+                for(i in result){
+                    $("#rgroup").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="'+result[i].name+'">'+result[i].name+'</option>');
+                }
+
+            }
+        })
+    });
+
+
+
+    $("#sapplication").change(function(){
+    var applicationid=$("#sapplication").val();
+
+    if("" == applicationid){
+        document.getElementById("srule").style.display="none";
+    }else{
+        document.getElementById("srule").style.display="block";
+    }
+
+    jQuery.ajax({
+        type: "POST",
+        url: "getRulesModel",
+        dataType: 'json',
+        data : {
+            "applicationid": applicationid
+        },
+        async: false,
+        error: function () {
+            alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+            return false;
+        },
+        success : function(result){
+            $("#srule").html("");
+            $("#srule").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="">选择告警模板</option>');
+            for(i in result){
+                $("#srule").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="'+result[i].id+'">'+result[i].name+'</option>');
+            }
+        }
+    })
+});
+
+
+    $("#rgroup").change(function(){
+        var group=$("#rgroup").val();
+        if("" == rgroup){
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: "getAllHosts",
+            dataType: 'json',
+            data : {
+                "group": group
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                $("#rhosts").html("");
+{#                $("#rhosts").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="">选择告警模板</option>');#}
+                for(i in result){
+                    $("#rhosts").append('<li id="' + result[i].id + '" style="width: 100%; padding: 4px;">');
+                    $("#rhosts").append('<a id="a' + result[i].id + '" href="javascript:addHost(\''+ result[i].id +'\',\''+ result[i].name +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
+                    $("#rhosts").append('<input id="i' + result[i].id + '" type="text" value="'+result[i].name+'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+                    $("#rhosts").append('</li>');
+                }
+            }
+        })
+    });
+
+
+    function addHost(hid, hname){
+        var idObject = document.getElementById(hid);
+        idObject.parentNode.removeChild(idObject);
+        idObject = document.getElementById('a'+hid);
+        idObject.parentNode.removeChild(idObject);
+        idObject = document.getElementById('i'+hid);
+        idObject.parentNode.removeChild(idObject);
+        $("#srhosts").append('<li id="d' + hid + '" style="width: 100%; padding: 4px;">');
+        $("#srhosts").append('<a id="da' + hid + '" href="javascript:delHost(\''+ hid +'\',\''+ hname +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">-️</a>');
+        $("#srhosts").append('<input id="di' + hid + '" type="text" value="'+hname+'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+        $("#srhosts").append('<input class="rules" id="dv' + hid + '" type="text" value="'+hid+'" style="display: none; outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+        $("#srhosts").append('</li>');
+    }
+
+    function delHost(hid, hname){
+        var idObject = document.getElementById('d' + hid);
+        idObject.parentNode.removeChild(idObject);
+        idObject = document.getElementById('da'+hid);
+        idObject.parentNode.removeChild(idObject);
+        idObject = document.getElementById('di'+hid);
+        idObject.parentNode.removeChild(idObject);
+        idObject = document.getElementById('dv'+hid);
+        idObject.parentNode.removeChild(idObject);
+
+        $("#rhosts").append('<li id="' + hid + '" style="width: 100%; padding: 4px;">');
+        $("#rhosts").append('<a id="a' + hid + '" href="javascript:addHost(\''+ hid +'\',\''+ hname +'\',)" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
+        $("#rhosts").append('<input id="i' + hid + '" type="text" value="'+ hname +'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+        $("#rhosts").append('</li>');
+    }
+
+    function submitRule(){
+        var app = $("#sapplication").val();
+        var rmodel = $("#srule").val();
+
+        if("" == app || "" == rmodel){
+            alert("请选择应用集和规则模板");
+            return;
+        }
+        alert(rmodel);
+        var hosts = "";
+        elems = document.getElementsByClassName("rules");
+        for(var i=0;i<elems.length;i++){
+            if("" == hosts){
+                hosts = elems[i].value;
+            }else{
+                hosts = hosts + ',' + elems[i].value;
+            }
+        }
+
+        jQuery.ajax({
+            type: "POST",
+            url: "addAllRules",
+            dataType: 'json',
+            data : {
+                "rmodel": rmodel,
+                "hosts": hosts
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                alert(result);
+            }
+        })
+    }
+
+</script>
+
+</html>

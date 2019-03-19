@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+    td {
+        border: 1px solid lightgrey;
+        padding: 4px 5px 4px 5px;
+        height: 25px;
+        text-align: center;
+        font-size: 12px;
+        color: grey;
+    }
+
+
+    .showconfig {
+        position: fixed;
+        z-index: 4;
+        top: 8%;
+        left: 10%;
+        width: 78%;
+        height: 84%;
+        border: 5px solid #CCC;
+{#        text-align: center;#}
+        font-size: 15px;
+        white-space: normal;
+        display: none;
+        color: lawngreen;
+        background-color: black;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+        /*底色*/
+    .back_color{
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border: 5px solid #CCC;
+        text-align: center;
+        font-size: 10px;
+        display: none;
+        background-color: black;
+        opacity: 0.5;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+</style>
+
+<body style="height: 80%; width: 100%;">
+    <div style="height: 30px; width: 95%">
+        <button type="button" onclick="showGroupInfo()" style="float: right; border: 1px solid black;height: 34px; width: 50px; color: white;background-color: black">查询</button>
+        <input type="text" style="float: right; border: 1px solid lightgrey; height: 30px; width: 28%"  value=""/>
+    </div>
+
+    <div style="width: 100%; margin-top: 10px;">
+        <table style="width: 95%; border-collapse:collapse; border-spacing: 0;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr  style="background-color: black; border-radius:10px;">
+                    <td width="15%" style="color: white;">名称</td>
+                    <td width="10%" style="color: white;">抓取时间</td>
+                    <td width="10%" style="color: white;">接口方式</td>
+                    <td width="10%" style="color: white;">跳过验证</td>
+                    <td width="10%" style="color: white;">接口地址</td>
+                    <td width="40%" style="color: white;">匹配规则</td>
+                    <td width="5%" style="color: white;">操作</td>
+                </tr>
+            </thead>
+            <tbody id="groupinfos">
+
+            </tbody>
+        </table>
+    </div>
+    <div style="height: 30px; width: 95%">
+        <div id="showpages" style="float: right;">
+
+        </div>
+    </div>
+
+
+    <div class="showconfig" id="showconfig">
+        <label style="position: fixed;right: 14%;top: 9%;font-size: 30px; color: white"><a href="javascript:closeBack()" style="text-decoration:none; color: white;">✘</a></label>
+        <label style="position: fixed;right: 17%;top: 9%;font-size: 30px; color: white"><a class="updown" href="javascript:submitUpdate()" style="text-decoration:none; color: white;">✔️</a></label>
+
+        <ul>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    标识:
+                </label>
+                <input id="gid" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    名称:
+                </label>
+                <input id="gname" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    时间:
+                </label>
+                <input id="gtime" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    方式:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="gtype" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+{#                    <option selected style="text-align: center" value="http">请选择监控方式(默认http)</option>#}
+                    <option style="text-align: center" value="http">http</option>
+                    <option style="text-align: center" value="https">https</option>
+                </select>
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    证书:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="gcheck" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+{#                    <option selected style="text-align: center" value="true">是否跳过证书验证(默认是)</option>#}
+                    <option style="text-align: center" value="true">是</option>
+                    <option style="text-align: center" value="false">否</option>
+                </select>
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    接口:
+                </label>
+                <input id="guri" type="text" style="padding: 4px; width: 25%" value="1234">
+            </li>
+            <li  style="padding: 6px;">
+                <label style="color: black">匹配</label>
+                 <textarea id="gmatch" rows="10"  style="padding: 0; width: 70%; border: 1px solid grey; outline: none;"
+                  placeholder='   设置匹配规则....(默认为空) 多个规则用,号隔开
+            例如:
+                {job=~"kubernetes-service-endpoints"},{__name__=~"rtpproxy_.*"}'></textarea>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+            </li>
+        </ul>
+    </div>
+
+    <div id="backshow" class="back_color" style="width: 100% ; height: 100%;">
+    </div>
+
+</body>
+    <script src="/static/js/jquery-2.1.1.js"></script>
+<script>
+    var page = 1;
+
+    $(document).ready(function () {
+        showGroupInfo(1);
+        page = 1;
+    });
+
+    function showGroupInfo(pageS){
+        jQuery.ajax({
+            type: "POST",
+            url: "showGroupInfo",
+            dataType: 'json',
+            data: {"page": pageS},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+
+                var htmlg = '';
+                for(var index in result['value']){
+
+                    var value = "'" + result['value'][index]['id'] + "'";
+                    value = value + ", '" + result['value'][index]['name'] + "'";
+                    value = value + ", '" + result['value'][index]['scrape_interval'] + "'";
+                    value = value + ", '" + result['value'][index]['scheme'] + "'";
+                    value = value + ", '" + result['value'][index]['insecure_skip_verify'] + "'";
+                    value = value + ", '" + result['value'][index]['metrics_path'] + "'";
+                    value = value + ", '" + result['value'][index]['match'] + "'";
+                    value = encodeURIComponent(value);
+                    htmlg = htmlg + '<tr>';
+                    htmlg = htmlg + '<td width="15%"><a href="javascript:updateInFo(' + value + ')" style="color: grey; text-decoration: none">' + result['value'][index]['name'] + '</a></td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['scrape_interval'] + '</td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['scheme'] + '</td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['insecure_skip_verify'] + '</td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['metrics_path'] + '</td>';
+                    htmlg = htmlg + '<td width="40%">' + result['value'][index]['match'] + '</td>';
+                    htmlg = htmlg + '<td width="5%"><button type="button" onclick="delGroup(\''+result['value'][index]['id']+'\')">删除</button></td>';
+                    htmlg = htmlg + '</tr>';
+                }
+                $("#groupinfos").html(htmlg);
+
+                var uppage = 1;
+                var downpage = result['pages'];
+                if(page != 1){
+                    uppage = page -1;
+                }
+                if(page != downpage){
+                    downpage = page +1
+                }
+
+
+                var html = '<a href="javascript:showGroupInfo(\''+ uppage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
+
+                for (var i=1 ; i<= result['pages']; i++){
+                    html = html + '<a href="javascript:showGroupInfo(\''+ i +'\')" style=" padding: 2px;color: black;">'+i+'</a>';
+                }
+                html = html + '<a href="javascript:showGroupInfo(\''+ downpage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
+                $("#showpages").html(html);
+
+            }
+        })
+    }
+
+    function updateInFo(gid, name,scrape_interval,scheme,insecure_skip_verify,metrics_path, match){
+        $("#gid").val(gid);
+        $("#gname").val(name);
+        $("#gtime").val(scrape_interval);
+        $("#gtype").val(scheme);
+        $("#gcheck").val(insecure_skip_verify);
+        $("#guri").val(metrics_path);
+        $("#gmatch").val(match);
+        document.getElementById("showconfig").style.display="block";
+        document.getElementById("backshow").style.display="block";
+    }
+
+    function submitUpdate(){
+        var x = confirm("是否确认更新该主机组信息");
+        if (x == false) {
+            return;
+        }
+        var gid = $("#gid").val();
+        var gname = $("#gname").val();
+        var gtime = $("#gtime").val();
+        var gtype = $("#gtype").val();
+        var gcheck = $("#gcheck").val();
+        var guri = $("#guri").val();
+        var gmatch = $("#gmatch").val();
+
+        jQuery.ajax({
+            type: "POST",
+            url: "updateGroupInfo",
+            dataType: 'json',
+            data: {"gid": gid, "gname": gname, "gtime": gtime, "gtype": gtype, "gcheck": gcheck, "guri": guri, "gmatch": gmatch, },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+        });
+
+    }
+
+    function delGroup(gid){
+        var x = confirm("危险操作,是否确认删除该主机组");
+        if (x == false) {
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: "delGroupInfo",
+            dataType: 'json',
+            data: {"gid": gid},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+        });
+    }
+
+
+    function closeBack(){
+        document.getElementById("showconfig").style.display="none";
+        document.getElementById("backshow").style.display="none";
+    }
+
+</script>
+</html>

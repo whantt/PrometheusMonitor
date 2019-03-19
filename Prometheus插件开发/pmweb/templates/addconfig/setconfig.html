@@ -70,45 +70,45 @@
             <div class="config-prometheus" style="position: absolute; left: 1%; top: 6%; height: 100%; width: 96%">
 
                 <div style="position: absolute; top: 7%; height: 15%; width: 30%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white"> 名称: </label>
-                    <input id="prometheusName" style="float: left; height: 100%; width: 70%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置配置名称....">
+                    <label style="float: left;height: 100%; padding: 2px 5px 0 5px; border: 1px solid black; background-color: black; color: white"> 名称: </label>
+                    <input id="prometheusName" style="float: left; height: 100%; width: 70%; border: 1px solid black; outline: none;" type="text" placeholder="   设置配置名称....">
                 </div>
 
                 <div style="position: absolute; top: 35%; height: 15%; width: 30%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">监控时间:</label>
-                    <input id="prometheusInterval" style="float: left; height: 100%; width: 70%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置监控时间间隔....">
+                    <label style="float: left; height: 100%;padding: 2px 5px 0 5px; border: 1px solid black; background-color: black; color: white">监控时间:</label>
+                    <input id="prometheusInterval" style="float: left; height: 100%; width: 70%; border: 1px solid black; outline: none;" type="text" placeholder="   设置监控时间间隔....">
                 </div>
 
                 <div style="position: absolute; top: 35%; height: 15%; width: 30%; left: 30%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">匹配时间:</label>
-                    <input id="prometheusRInterval" style="float: left; height: 100%; width: 70%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置告警判断时间间隔....">
+                    <label style="float: left; height: 100%;padding: 2px 5px 0 5px; border: 1px solid black; background-color: black; color: white">匹配时间:</label>
+                    <input id="prometheusRInterval" style="float: left; height: 100%; width: 70%; border: 1px solid black; outline: none;" type="text" placeholder="   设置告警判断时间间隔....">
                 </div>
 
                 <div style="position: absolute; top: 35%; height: 15%; width: 40%; left: 61%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">告警url:</label>
-                    <input id="prometheusAUrl" style="float: left; height: 100%; width: 80%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置告警模块url....">
+                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid black; background-color: black; color: white">告警url:</label>
+                    <input id="prometheusAUrl" style="float: left; height: 100%; width: 80%; border: 1px solid black; outline: none;" type="text" placeholder="   设置告警模块url....">
                 </div>
 
 
                 <div style="position: absolute; top: 58%; height: 15%; width: 30%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">告警文件:</label>
-                    <input id="prometheusRPath" style="float: left; height: 100%; width: 70%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置rule文件路径....">
+                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid black; background-color: black; color: white">告警文件:</label>
+                    <input id="prometheusRPath" style="float: left; height: 100%; width: 70%; border: 1px solid black; outline: none;" type="text" placeholder="   设置rule文件路径....">
                 </div>
 
                 <div style="position: absolute; top: 58%; height: 15%; width: 30%; left: 30%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">Job文件:</label>
-                    <input id="prometheusJPath" style="float: left; height: 100%; width: 73%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置Job文件路径....">
+                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid black; background-color: black; color: white">Job文件:</label>
+                    <input id="prometheusJPath" style="float: left; height: 100%; width: 73%; border: 1px solid black; outline: none;" type="text" placeholder="   设置Job文件路径....">
                 </div>
 
                 <div style="position: absolute; top: 58%; height: 15%; width: 30%; left: 61%">
-                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid lightseagreen; background-color: lightseagreen; color: white">超时时间:</label>
-                    <input id="prometheusTimeout" style="float: left; height: 100%; width: 73%; border: 1px solid lightseagreen; outline: none;" type="text" placeholder="   设置超时时间....">
+                    <label style="float: left; height: 100%;padding: 1px; border: 1px solid black; background-color: black; color: white">超时时间:</label>
+                    <input id="prometheusTimeout" style="float: left; height: 100%; width: 73%; border: 1px solid black; outline: none;" type="text" placeholder="   设置超时时间....">
                 </div>
 
-                <div style="position: absolute; top: 77%; height: 15%; width: 30%; left: 84%;">
+                <div style="position: absolute; top: 77%; height: 15%; width: 30%; left: 80%;">
                     <button type="submit" onclick="showPConfig()" style="float: left; height: 100%; width: 20%; background-color: darkseagreen; border: 1px solid darkseagreen; color: white; outline: none">预览</button>
                     <button type="submit" onclick="addPConfig()" style="margin-left: 1%; float: left; height: 100%; width: 20%; background-color: darkseagreen; border: 1px solid darkseagreen; color: white; outline: none">提交</button>
-                    <button type="submit" onclick="updatePConfig()" style="margin-left: 1%; float: left; height: 100%; width: 20%; background-color: darkseagreen; border: 1px solid darkseagreen; color: white; outline: none">更新文件</button>
+                    <button type="submit" onclick="updatePConfig()" style="margin-left: 1%; float: left; height: 100%; width: 30%; background-color: darkseagreen; border: 1px solid darkseagreen; color: white; outline: none">更新文件</button>
                 </div>
 
             </div>
@@ -338,13 +338,6 @@
             },
             success: function (result) {
                 alert(result);
-{#                if(result['status'] == 0){#}
-{#                    alert('数据错误,请检查配置信息!');#}
-{#                }else{#}
-{#                    $("#content").html(result['config']);#}
-{#                    document.getElementById("showconfig").style.display="block";#}
-{#                    document.getElementById("backshow").style.display="block";#}
-{#                }#}
             }
         })
 

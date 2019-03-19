@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'addconfig',
     'mymiddleware.SetCode',
+    'showconfig',
+    'addrules',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -90,16 +92,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pmweb.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 DATABASES = {
      'default': {

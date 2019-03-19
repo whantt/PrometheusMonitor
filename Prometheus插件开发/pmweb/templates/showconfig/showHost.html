@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+    td {
+        border: 1px solid lightgrey;
+        padding: 4px 5px 4px 5px;
+        height: 25px;
+        text-align: center;
+        font-size: 12px;
+        color: grey;
+    }
+
+
+    .showconfig {
+        position: fixed;
+        z-index: 4;
+        top: 8%;
+        left: 10%;
+        width: 78%;
+        height: 84%;
+        border: 5px solid #CCC;
+{#        text-align: center;#}
+        font-size: 15px;
+        white-space: normal;
+        display: none;
+        color: lawngreen;
+        background-color: black;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+        /*底色*/
+    .back_color{
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border: 5px solid #CCC;
+        text-align: center;
+        font-size: 10px;
+        display: none;
+        background-color: black;
+        opacity: 0.5;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+</style>
+
+<body style="height: 80%; width: 100%;">
+    <div style="height: 30px; width: 95%">
+        <button type="button" onclick="showGroupInfo()" style="float: right; border: 1px solid black;height: 34px; width: 50px; color: white;background-color: black">查询</button>
+        <input type="text" style="float: right; border: 1px solid lightgrey; height: 30px; width: 28%"  value=""/>
+    </div>
+
+    <div style="width: 100%; margin-top: 10px;">
+        <table style="width: 95%; border-collapse:collapse; border-spacing: 0;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr style="background-color: black; border-radius:10px;">
+                    <td width="18%" style="color: white;">实例</td>
+                    <td width="10%" style="color: white;">地址</td>
+                    <td width="12%" style="color: white;">属组</td>
+                    <td width="10%" style="color: white;">类型</td>
+{#                    <td width="10%" style="color: white;">接口地址</td>#}
+                    <td width="45%" style="color: white;">label</td>
+                    <td width="5%" style="color: white;">操作</td>
+                </tr>
+            </thead>
+            <tbody id="groupinfos">
+
+            </tbody>
+        </table>
+    </div>
+    <div style="height: 30px; width: 95%">
+        <div id="showpages" style="float: right;">
+
+        </div>
+    </div>
+
+
+    <div class="showconfig" id="showconfig">
+        <label style="position: fixed;right: 14%;top: 9%;font-size: 30px; color: white"><a href="javascript:closeBack()" style="text-decoration:none; color: white;">✘</a></label>
+        <label style="position: fixed;right: 17%;top: 9%;font-size: 30px; color: white"><a class="updown" href="javascript:submitUpdate()" style="text-decoration:none; color: white;">✔️</a></label>
+
+        <ul>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    标识:
+                </label>
+                <input id="gid" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    名称:
+                </label>
+                <input id="gname" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    时间:
+                </label>
+                <input id="gtime" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    方式:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="gtype" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+{#                    <option selected style="text-align: center" value="http">请选择监控方式(默认http)</option>#}
+                    <option style="text-align: center" value="http">http</option>
+                    <option style="text-align: center" value="https">https</option>
+                </select>
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    证书:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="gcheck" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+{#                    <option selected style="text-align: center" value="true">是否跳过证书验证(默认是)</option>#}
+                    <option style="text-align: center" value="true">是</option>
+                    <option style="text-align: center" value="false">否</option>
+                </select>
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    接口:
+                </label>
+                <input id="guri" type="text" style="padding: 4px; width: 25%" value="1234">
+            </li>
+            <li  style="padding: 6px;">
+                <label style="color: black">匹配</label>
+                 <textarea id="gmatch" rows="10"  style="padding: 0; width: 70%; border: 1px solid grey; outline: none;"
+                  placeholder='   设置匹配规则....(默认为空) 多个规则用,号隔开
+            例如:
+                {job=~"kubernetes-service-endpoints"},{__name__=~"rtpproxy_.*"}'></textarea>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+            </li>
+        </ul>
+    </div>
+
+    <div id="backshow" class="back_color" style="width: 100% ; height: 100%;">
+    </div>
+
+</body>
+<script src="/static/js/jquery-2.1.1.js"></script>
+<script>
+
+    var page = 1;
+
+    $(document).ready(function () {
+        showGroupInfo(1);
+        page = 1;
+    });
+
+    function showGroupInfo(pageS){
+        jQuery.ajax({
+            type: "POST",
+            url: "showHostInfo",
+            dataType: 'json',
+            data: {"page": pageS},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                var htmlg = '';
+                for(var index in result['value']){
+
+{#                            _rs['hid'] = ht[i].hid#}
+{#        _rs['instance'] = ht[i].instance#}
+{#        _rs['name'] = ht[i].name#}
+{#        _rs['groupid'] = ht[i].groupid#}
+{#        _rs['monitortype'] = ht[i].monitortype#}
+{#        _rs['label'] = ht[i].label#}
+
+
+                    var value = "'" + result['value'][index]['hid'] + "'";
+                    value = value + ", '" + result['value'][index]['name'] + "'";
+                    value = value + ", '" + result['value'][index]['instance'] + "'";
+                    value = value + ", '" + result['value'][index]['groupid'] + "'";
+                    value = value + ", '" + result['value'][index]['monitortype'] + "'";
+{#                    value = value + ", '" + result['value'][index]['metrics_path'] + "'";#}
+                    value = value + ", '" + result['value'][index]['label'] + "'";
+                    value = encodeURIComponent(value);
+                    htmlg = htmlg + '<tr>';
+                    htmlg = htmlg + '<td width="18%"><a href="javascript:updateInFo(' + value + ')" style="color: grey; text-decoration: none">' + result['value'][index]['name'] + '</a></td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['instance'] + '</td>';
+                    htmlg = htmlg + '<td width="12%">' + result['value'][index]['groupid'] + '</td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['monitortype'] + '</td>';
+                    htmlg = htmlg + '<td width="45%">' + result['value'][index]['label'] + '</td>';
+{#                    htmlg = htmlg + '<td width="40%">' + result['value'][index]['match'] + '</td>';#}
+                    htmlg = htmlg + '<td width="5%"><button type="button" onclick="delGroup(\''+result['value'][index]['hid']+'\')">删除</button></td>';
+                    htmlg = htmlg + '</tr>';
+                }
+                $("#groupinfos").html(htmlg);
+
+                var uppage = 1;
+                var downpage = result['pages'];
+                if(page != 1){
+                    uppage = page -1;
+                }
+                if(page != downpage){
+                    downpage = page +1
+                }
+
+
+                var html = '<a href="javascript:showGroupInfo(\''+ uppage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
+
+                for (var i=1 ; i<= result['pages']; i++){
+                    html = html + '<a href="javascript:showGroupInfo(\''+ i +'\')" style=" padding: 2px;color: black;">'+i+'</a>';
+                }
+                html = html + '<a href="javascript:showGroupInfo(\''+ downpage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
+                $("#showpages").html(html);
+
+            }
+        })
+    }
+
+</script>
+</html>
