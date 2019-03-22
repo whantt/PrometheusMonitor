@@ -2,9 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>clone</title>
 </head>
 <body>
-    克隆告警规则
+    <div style="height: 10%; width: 90%; margin: 20px">
+        <select id="groups" class="chosen-select" style="float: left; margin: 4px ;padding: 4px; width: 20%; outline: none">
+            <option selected style="text-align: center" value="">选择主机组</option>
+
+        </select>
+        <select id="hosts" class="chosen-select" style="float: left; display: none; margin: 4px ;padding: 4px; width: 20%; outline: none">
+            <option selected style="text-align: center" value="">选择主机</option>
+
+        </select>
+
+        <label id="sign" style="margin: 4px; color: red; font-size: 10px">请选择的克隆对象</label>
+        <button id="buttonid" type="button" onclick="submitClone()" style="float: left; display: none; margin: 4px;">提交</button>
+    </div>
+    <div id="targets" style="height: 10%; width: 90%; margin: 40px 20px 20px 20px">
+
+    </div>
+
+    <div id="host" style="height: 10%; width: 90%; margin: 20px">
+
+    </div>
+
 </body>
+<script src="/static/js/jquery-2.1.1.js"></script>
+<script>
+    var hostid = '';
+    var host = '';
+
+
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "POST",
+            url: "/addrule/getAllGroups",
+            dataType: 'json',
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                for(i in result){
+                    $("#groups").append('<option style="text-align: center" value="'+result[i].name+'">'+result[i].name+'</option>');
+                }
+{#                window.location.reload();#}
+            }
+        });
+    });
+
+
+        $("#groups").change(function(){
+            var groupname = $("#groups").val();
+            jQuery.ajax({
+                type: "POST",
+                url: "/addrule/getAllHosts",
+                dataType: 'json',
+                data: {'group': groupname},
+                async: false,
+                error: function () {
+                    alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                    return false;
+                },
+                success : function(result){
+                    $("#hosts").html('<option selected style="text-align: center" value="">选择主机</option>');
+                    for(i in result){
+                        $("#hosts").append('<option id="'+result[i].id+'" style="text-align: center" value="'+result[i].id+'">'+result[i].name+ '_' + result[i].instance + '</option>');
+                    }
+    {#                window.location.reload();#}
+                }
+            });
+
+            document.getElementById("hosts").style.display="block";
+        });
+
+
+    $("#hosts").change(function(){
+        var hid = $("#hosts").val();
+        var hostname = $("#"+ hid).text();
+        if("" == hostid){
+            hostid = hid;
+            $("#sign").text('请选择目标主机');
+            $("#targets").html('目标为:  ' + hostname );
+            return;
+        }
+        if("" == host && "" != hostid){
+            host = hid;
+            $("#sign").text('');
+            $("#host").html('添加至:  ' + hostname );
+            document.getElementById("buttonid").style.display="block";
+        }
+
+    });
+
+
+    function submitClone(){
+        alert(hostid + ' , ' + host);
+        jQuery.ajax({
+            type: "POST",
+            url: "/addrule/submitClone",
+            dataType: 'json',
+            data: {'targets': hostid,
+                    'host': host
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                alert(result);
+                window.location.reload();
+            }
+        });
+
+    }
+</script>
 </html>

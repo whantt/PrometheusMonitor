@@ -4,6 +4,46 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
+<style>
+    .showconfig {
+        position: fixed;
+        z-index: 4;
+        top: 8%;
+        left: 10%;
+        width: 78%;
+        height: 84%;
+        border: 5px solid #CCC;
+{#        text-align: center;#}
+        font-size: 15px;
+        white-space: normal;
+        display: none;
+        color: lawngreen;
+        background-color: black;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+        /*底色*/
+    .back_color{
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border: 5px solid #CCC;
+        text-align: center;
+        font-size: 10px;
+        display: none;
+        background-color: black;
+        opacity: 0.5;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+</style>
 <body style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
     <div style="width: 100%; height: 40px; margin: 20px">
 {#        <label>应用集: </label>#}
@@ -15,7 +55,8 @@
 
         </select>
 
-        <button type="button" onclick="submitRule()" style="outline: none; background-color: grey; color: white; border-radius: 5px; border: 0; padding: 3px 15px 3px 15px; margin-left: 20px">提交</button>
+        <button type="button" onclick="showModelRule()" style="outline: none; background-color: grey; color: white; border-radius: 5px; border: 0; padding: 3px 15px 3px 15px; margin-left: 20px">查看</button>
+        <button type="button" onclick="submitRule()" style="outline: none; background-color: grey; color: white; border-radius: 5px; border: 0; padding: 3px 15px 3px 15px; margin-left: 3px">提交</button>
     </div>
 
     <div style=" width: 100%;height: 80%;">
@@ -25,9 +66,7 @@
 
                 </ul>
             </div>
-{#            <ul id="srhosts" style="height: 100%; width: 100%; overflow: auto; list-style: none; margin: 5px 0 0 20px; padding: 0;">#}
-{##}
-{#            </ul>#}
+
         </div>
 
         <a href="#" style="float: left; margin-top: 15%; text-decoration: none"><<=</a>
@@ -41,6 +80,83 @@
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="showconfig" id="showconfig">
+        <label style="position: fixed;right: 14%;top: 9%;font-size: 30px; color: white"><a href="javascript:closeBack()" style="text-decoration:none; color: white;">✘</a></label>
+        <label style="position: fixed;right: 17%;top: 9%;font-size: 30px; color: white"><a class="updown" href="javascript:UpdateModel()" style="text-decoration:none; color: white;">✔️</a></label>
+
+        <ul>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    标识:
+                </label>
+                <input id="rid" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;display: none; ">
+                <label>
+                    名字:
+                </label>
+                <input id="rname_old" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    名字:
+                </label>
+                <input id="rname" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    服务:
+                </label>
+                <input id="rservice" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    时间:
+                </label>
+                <input id="rfortime" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    模板:
+                </label>
+                <input id="rmodel" type="text" style="padding: 4px; width: 65%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    描述:
+                </label>
+                <input id="rdescription" type="text" style="padding: 4px; width: 65%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    等级:
+                </label>
+{#                <input id="rlevel" type="text" style="padding: 4px; width: 25%" value="">#}
+                <select id="rlevel" style="margin: 3px; width: 20%; font-size: 12px; padding: 10px;  outline: none">
+                    <option selected style="text-align: center;margin: 3px; padding: 20px;" value="">选择告警等级</option>
+                    <option style="text-align: center" value="average">average</option>
+                    <option style="text-align: center" value="disaster">disaster</option>
+                </select>
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    应用:
+                </label>
+                <input id="rapplication" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    规则:
+                </label>
+{#                <input id="rexpr" type="text" style="padding: 4px; width: 25%" value="">#}
+                <textarea id="rexpr" rows="10"  style="padding: 0; width: 70%; border: 1px solid grey; outline: none;"></textarea>
+            </li>
+
+        </ul>
+    </div>
+    <div id="backshow" class="back_color" style="width: 100% ; height: 100%;">
     </div>
 </body>
 
@@ -143,8 +259,8 @@
 {#                $("#rhosts").append('<option style="text-align: center;margin: 3px; padding: 20px;" value="">选择告警模板</option>');#}
                 for(i in result){
                     $("#rhosts").append('<li id="' + result[i].id + '" style="width: 100%; padding: 4px;">');
-                    $("#rhosts").append('<a id="a' + result[i].id + '" href="javascript:addHost(\''+ result[i].id +'\',\''+ result[i].name +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
-                    $("#rhosts").append('<input id="i' + result[i].id + '" type="text" value="'+result[i].name+'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+                    $("#rhosts").append('<a id="a' + result[i].id + '" href="javascript:addHost(\''+ result[i].id +'\',\''+ result[i].name +'\',\''+ result[i].instance +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
+                    $("#rhosts").append('<input id="i' + result[i].id + '" type="text" value="'+result[i].name + '_' + result[i].instance+'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
                     $("#rhosts").append('</li>');
                 }
             }
@@ -152,7 +268,7 @@
     });
 
 
-    function addHost(hid, hname){
+    function addHost(hid, hname, instance){
         var idObject = document.getElementById(hid);
         idObject.parentNode.removeChild(idObject);
         idObject = document.getElementById('a'+hid);
@@ -160,13 +276,13 @@
         idObject = document.getElementById('i'+hid);
         idObject.parentNode.removeChild(idObject);
         $("#srhosts").append('<li id="d' + hid + '" style="width: 100%; padding: 4px;">');
-        $("#srhosts").append('<a id="da' + hid + '" href="javascript:delHost(\''+ hid +'\',\''+ hname +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">-️</a>');
-        $("#srhosts").append('<input id="di' + hid + '" type="text" value="'+hname+'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+        $("#srhosts").append('<a id="da' + hid + '" href="javascript:delHost(\''+ hid +'\',\''+ hname +'\',\''+ instance +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">-️</a>');
+        $("#srhosts").append('<input id="di' + hid + '" type="text" value="'+hname+'_' + instance +'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
         $("#srhosts").append('<input class="rules" id="dv' + hid + '" type="text" value="'+hid+'" style="display: none; outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
         $("#srhosts").append('</li>');
     }
 
-    function delHost(hid, hname){
+    function delHost(hid, hname, instance){
         var idObject = document.getElementById('d' + hid);
         idObject.parentNode.removeChild(idObject);
         idObject = document.getElementById('da'+hid);
@@ -177,8 +293,8 @@
         idObject.parentNode.removeChild(idObject);
 
         $("#rhosts").append('<li id="' + hid + '" style="width: 100%; padding: 4px;">');
-        $("#rhosts").append('<a id="a' + hid + '" href="javascript:addHost(\''+ hid +'\',\''+ hname +'\',)" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
-        $("#rhosts").append('<input id="i' + hid + '" type="text" value="'+ hname +'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
+        $("#rhosts").append('<a id="a' + hid + '" href="javascript:addHost(\''+ hid +'\',\''+ hname +'\',\''+ instance +'\')" style=" width:10%; margin-left: 3px; background-color: darkseagreen; color: white; border-radius: 5px; text-decoration: none">+️</a>');
+        $("#rhosts").append('<input id="i' + hid + '" type="text" value="'+ hname + '_' + instance +'" style="outline: none;margin-left: 15px; width:90%; border: 0; font-size: 15px">');
         $("#rhosts").append('</li>');
     }
 
@@ -190,7 +306,6 @@
             alert("请选择应用集和规则模板");
             return;
         }
-        alert(rmodel);
         var hosts = "";
         elems = document.getElementsByClassName("rules");
         for(var i=0;i<elems.length;i++){
@@ -219,6 +334,100 @@
             }
         })
     }
+
+
+
+    function showModelRule(){
+        var app = $("#sapplication").val();
+        var rmodel = $("#srule").val();
+
+        if("" == app || "" == rmodel){
+            alert("请选择应用集和规则模板");
+            return;
+        }
+
+        jQuery.ajax({
+            type: "POST",
+            url: "getRuleModel",
+            dataType: 'json',
+            data : {
+                "rmodel": rmodel
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+{#                alert(result);#}
+                $("#rid").val(result['id']);
+                $("#rname_old").val(result['name']);
+                $("#rname").val(result['name']);
+                $("#rservice").val(result['service']);
+                $("#rfortime").val(result['fortime']);
+                $("#rmodel").val(result['model']);
+                $("#rdescription").val(result['description']);
+                $("#rlevel").val(result['level']);
+                $("#rapplication").val(result['application']);
+                $("#rexpr").html(result['expr']);
+            }
+        });
+
+        document.getElementById("showconfig").style.display="block";
+        document.getElementById("backshow").style.display="block";
+    }
+
+
+    function closeBack(){
+        document.getElementById("showconfig").style.display="none";
+        document.getElementById("backshow").style.display="none";
+    }
+
+    function UpdateModel(){
+        var x = confirm("是否确认更新该模板信息");
+        if (x == false) {
+            return;
+        }
+        var rid = $("#rid").val();
+        var rname_old = $("#rname_old").val();
+        var rname = $("#rname").val();
+        var rservice = $("#rservice").val();
+        var rfortime = $("#rfortime").val();
+        var rmodel = $("#rmodel").val();
+        var rdescription = $("#rdescription").val();
+        var rlevel = $("#rlevel").val();
+        var rapplication = $("#rapplication").val();
+        var rexpr = $("#rexpr").html();
+
+        jQuery.ajax({
+            type: "POST",
+            url: "updateRuleModel",
+            dataType: 'json',
+            data : {
+                "rid": rid,
+                "rname_old": rname_old,
+                "rname": rname,
+                "rservice": rservice,
+                "rfortime": rfortime,
+                "rmodel": rmodel,
+                "rdescription": rdescription,
+                "rlevel": rlevel,
+                "rapplication": rapplication,
+                "rexpr": rexpr
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success : function(result){
+                alert(result);
+                window.location.reload();
+            }
+        });
+
+    }
+
 
 </script>
 

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+    td {
+        border: 1px solid lightgrey;
+        padding: 4px 5px 4px 5px;
+        height: 25px;
+        text-align: center;
+        font-size: 12px;
+        color: grey;
+    }
+
+
+    .showconfig {
+        position: fixed;
+        z-index: 4;
+        top: 8%;
+        left: 10%;
+        width: 78%;
+        height: 84%;
+        border: 5px solid #CCC;
+{#        text-align: center;#}
+        font-size: 15px;
+        white-space: normal;
+        display: none;
+        color: lawngreen;
+        background-color: black;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+        /*底色*/
+    .back_color{
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border: 5px solid #CCC;
+        text-align: center;
+        font-size: 10px;
+        display: none;
+        background-color: black;
+        opacity: 0.5;
+        overflow: auto;
+        _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+    }
+
+
+</style>
+
+<body style="height: 80%; width: 100%;">
+    <div style="height: 30px; width: 95%">
+        <button type="button" onclick="selectInfo()" style="outline: none; float: right; border: 1px solid black;height: 34px; width: 50px; color: white;background-color: black">查询</button>
+        <input id="keyword" type="text" style="outline: none; float: right; border: 1px solid lightgrey; height: 30px; width: 28%"  value=""/>
+    </div>
+
+    <div style="width: 100%; margin-top: 10px;">
+        <table style="width: 95%; border-collapse:collapse; border-spacing: 0;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr  style="background-color: black; border-radius:10px;">
+                    <td width="10%" style="color: white;">名称</td>
+                    <td width="20%" style="color: white;">实例名</td>
+                    <td width="15%" style="color: white;">地址</td>
+                    <td width="10%" style="color: white;">属组</td>
+                    <td width="40%" style="color: white;">告警规则</td>
+                    <td width="5%" style="color: white;">状态</td>
+                </tr>
+            </thead>
+            <tbody id="groupinfos">
+
+            </tbody>
+        </table>
+    </div>
+    <div style="height: 30px; width: 95%">
+        <div id="showpages" style="float: right;">
+
+        </div>
+    </div>
+
+
+    <div class="showconfig" id="showconfig">
+        <label style="position: fixed;right: 14%;top: 9%;font-size: 30px; color: white"><a href="javascript:closeBack()" style="text-decoration:none; color: white;">✘</a></label>
+        <label style="position: fixed;right: 17%;top: 9%;font-size: 30px; color: white"><a class="updown" href="javascript:submitUpdate()" style="text-decoration:none; color: white;">✔️</a></label>
+
+        <ul>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    标识:
+                </label>
+                <input id="rid" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    主机:
+                </label>
+                <input id="rhid" type="text" style="padding: 4px; width: 50%" value="">
+            </li>
+            <li  style="padding: 6px; display: none">
+                <label>
+                    名称:
+                </label>
+                <input id="rname_old" type="text" style="padding: 4px; width: 40%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    名称:
+                </label>
+                <input id="rname" type="text" style="padding: 4px; width: 40%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    服务:
+                </label>
+                <input id="rservice" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+            <li  style="padding: 6px;">
+                <label>
+                    时间:
+                </label>
+                <input id="rtime" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    模板:
+                </label>
+                <input id="rmodel" type="text" style="padding: 4px; width: 55%" value="">
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    描述:
+                </label>
+                <input id="rdes" type="text" style="padding: 4px; width: 55%" value="">
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    等级:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="rlevel" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+                    <option selected style="text-align: center" value="">请选择告警等级</option>
+                    <option style="text-align: center" value="average">average</option>
+                    <option style="text-align: center" value="disaster">disaster</option>
+                </select>
+            </li>
+
+            <li  style="padding: 6px; display: none">
+                <label>
+                    状态:
+                </label>
+                <input id="rstatus_old" type="text" style="padding: 4px; width: 25%" value="">
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>
+                    状态:
+                </label>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+                <select id="rstatus" class="chosen-select" style="padding: 4px; width: 25%; outline: none">
+                    <option selected style="text-align: center" value="">选择告警状态</option>
+                    <option style="text-align: center" value="0">启动</option>
+                    <option style="text-align: center" value="-1">关闭</option>
+                </select>
+            </li>
+
+            <li  style="padding: 6px;">
+                <label>规则</label>
+                 <textarea id="rexpr" rows="10"  style="padding: 0; width: 70%; border: 1px solid grey;
+                 outline: none;"></textarea>
+{#                <input type="text" style="padding: 4px; width: 20%" value="1234">#}
+            </li>
+        </ul>
+    </div>
+
+    <div id="backshow" class="back_color" style="width: 100% ; height: 100%;">
+    </div>
+
+</body>
+    <script src="/static/js/jquery-2.1.1.js"></script>
+<script>
+    var page = 1;
+    var key_word = "";
+
+    $(document).ready(function () {
+        page = 1;
+        showGroupInfo(page);
+    });
+
+    function selectInfo(){
+        key_word = $("#keyword").val();
+{#        key_word = keyword;#}
+        page = 1;
+        showGroupInfo(page);
+    }
+
+
+    function showGroupInfo(pageS){
+        jQuery.ajax({
+            type: "POST",
+            url: "getAllRules",
+            dataType: 'json',
+            data: {"page": pageS, "key_word": key_word},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                var htmlg = '';
+                for(var index in result['value']){
+                    htmlg = htmlg + '<tr>';
+                    htmlg = htmlg + '<td width="10%"><a href="javascript:updateInFo(\''+ result['value'][index]['rid'] +'\')" style="color: grey; text-decoration: none">' + result['value'][index]['name'] + '</a></td>';
+                    htmlg = htmlg + '<td width="20%">' + result['value'][index]['hostname'] + '</td>';
+                    htmlg = htmlg + '<td width="15%">' + result['value'][index]['instance'] + '</td>';
+                    htmlg = htmlg + '<td width="10%">' + result['value'][index]['groupname'] + '</td>';
+                    htmlg = htmlg + '<td width="40%">' + result['value'][index]['expr'] + '</td>';
+                    htmlg = htmlg + '<td width="5%">' + result['value'][index]['status'] + '</td>';
+                    htmlg = htmlg + '</tr>';
+                }
+                $("#groupinfos").html(htmlg);
+
+                var uppage = 1;
+                var downpage = result['pages'];
+                if(page != 1){
+                    uppage = page -1;
+                }
+                if(page != downpage){
+                    downpage = page +1
+                }
+
+
+                var html = '<a href="javascript:showGroupInfo(\''+ uppage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
+
+                for (var i=1 ; i<= result['pages']; i++){
+                    html = html + '<a href="javascript:showGroupInfo(\''+ i +'\')" style=" padding: 2px;color: black;">'+i+'</a>';
+                }
+                html = html + '<a href="javascript:showGroupInfo(\''+ downpage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
+                $("#showpages").html(html);
+
+            }
+        })
+    }
+
+    function updateInFo(rid){
+        jQuery.ajax({
+            type: "POST",
+            url: "getRuleInfo",
+            dataType: 'json',
+            data: {"rid": rid},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                if(result['status'] != 'ok'){
+                    alert(result['status']);
+                }else{
+                    $("#rid").val(rid);
+                    $("#rname_old").val(result['value']['name']);
+                    $("#rname").val(result['value']['name']);
+                    $("#rservice").val(result['value']['service']);
+                    $("#rtime").val(result['value']['fortime']);
+                    $("#rmodel").val(result['value']['model']);
+                    $("#rdes").val(result['value']['description']);
+                    $("#rstatus").val(result['value']['status']);
+                    $("#rlevel").val(result['value']['level']);
+                    $("#rexpr").val(result['value']['expr']);
+                    $("#rstatus_old").val(result['value']['status']);
+                    $("#rhid").val(result['value']['hid']);
+                }
+            }
+        });
+
+        document.getElementById("showconfig").style.display="block";
+        document.getElementById("backshow").style.display="block";
+    }
+
+    function submitUpdate(){
+        var x = confirm("是否确认更新该监控信息");
+        if (x == false) {
+            return;
+        }
+
+        var rid = $("#rid").val();
+        var rname_old = $("#rname_old").val();
+        var rname = $("#rname").val();
+        var rservice = $("#rservice").val();
+        var rtime = $("#rtime").val();
+        var rmodel = $("#rmodel").val();
+        var rdes = $("#rdes").val();
+        var rstatus = $("#rstatus").val();
+        var rlevel = $("#rlevel").val();
+        var rexpr = $("#rexpr").val();
+        var rstatus_old = $("#rstatus_old").val();
+        var rhid = $("#rhid").val();
+
+        jQuery.ajax({
+            type: "POST",
+            url: "updateRuleInfo",
+            dataType: 'json',
+            data: {"rid": rid,
+                "rname_old": rname_old,
+                "rname": rname,
+                "rservice": rservice,
+                "rtime": rtime,
+                "rmodel": rmodel,
+                "rdes": rdes,
+                "rstatus": rstatus,
+                "rlevel": rlevel,
+                "rexpr": rexpr,
+                "rstatus_old": rstatus_old,
+                "rhid": rhid
+            },
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+        });
+
+    }
+
+    function delGroup(gid){
+        var x = confirm("危险操作,是否确认删除该主机组");
+        if (x == false) {
+            return;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: "delGroupInfo",
+            dataType: 'json',
+            data: {"gid": gid},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+        });
+    }
+
+
+    function closeBack(){
+        document.getElementById("showconfig").style.display="none";
+        document.getElementById("backshow").style.display="none";
+    }
+
+</script>
+</html>

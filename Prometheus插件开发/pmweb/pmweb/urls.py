@@ -23,9 +23,11 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'toMain/', views.toMain, name='toMain'),
     url(r'first/', views.firstPage, name='firstPage'),
+    url(r'refresh/', views.refresh, name='refresh'),
     url(r'^prometheusconfig/', include('addconfig.urls')),
     url(r'^prometheusinfo/', include('showconfig.urls')),
     url(r'^addrule/', include('addrules.urls')),
+    url(r'^showrule/', include('showrules.urls')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT,
         }),
 ]

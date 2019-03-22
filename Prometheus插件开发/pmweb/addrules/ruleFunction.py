@@ -2,6 +2,7 @@
 
 import os
 import json
+from models import PrometheusApplication, PrometheusRules, PrometheusRulesModel
 
 
 def write_file(filename, content):

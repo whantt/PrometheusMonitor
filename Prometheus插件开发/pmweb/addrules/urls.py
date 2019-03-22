@@ -12,4 +12,7 @@ urlpatterns = [
     url(r'getAllGroups', views.getAllGroups, name='getAllGroups'),
     url(r'getAllHosts', views.getAllHosts, name='getAllHosts'),
     url(r'addAllRules', views.addAllRules, name='addAllRules'),
+    url(r'getRuleModel', views.getRuleModel, name='getRuleModel'),
+    url(r'updateRuleModel', views.updateRuleModel, name='updateRuleModel'),
+    url(r'submitClone', views.submitClone, name='submitClone'),
 ]

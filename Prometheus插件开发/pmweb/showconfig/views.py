@@ -215,8 +215,6 @@ def delHostInfo(request):
 
     # 重新生成targets文件
     try:
-        print 3333333
-        print groupname
         ht = Host.objects.filter(groupid=groupname)
         x = []
         for index in range(0, len(ht)):
@@ -226,17 +224,11 @@ def delHostInfo(request):
             host['targets'] = target_host
             host['labels'] = eval(ht[index].label)
             x.append(host)
-        print 1111111
-        print job_path
-        print 2222222
         with open(job_path, 'w')as f:
             f.write(json.dumps(x, ensure_ascii=False))
     except Exception, e:
         print e
         rs += u'targets文件重新生成失败\n'
-    print rs
     if "" == rs:
         rs = u'删除成功'
-    print 1111
-    print rs
     return HttpResponse(json.dumps(rs))

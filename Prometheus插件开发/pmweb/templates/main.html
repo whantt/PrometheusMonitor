@@ -102,6 +102,28 @@
         </ul>
 
         <ul class="wul">
+            <li style="width: 150px; padding: 10px ;list-style-type: none;" onmouseover="onColor(this)" onmouseout="outColor(this)">
+
+                <label style="height: 30px; color: white;margin: 15px;"> > </label>
+                <a href="javascript:changeSrc('showRules')" style="height: 30px; text-decoration: none ;color: white;" target="change_iframe">查询规则</a>
+
+                <ul id="showRules" class="shows" style="margin-top: 10px; display: none; width: 120px;color: white; flex-direction: column;">
+{#                    <li style="margin: 0; padding-top: 10px;">#}
+{#                        <a id="showgroup" href="/showrule/showModelRule" class="showli"#}
+{#                           style="height: 30px; text-decoration: none ;color: white;" target="change_iframe"> 查看模板#}
+{#                        </a>#}
+{#                    </li>#}
+                    <li style="margin: 0; padding-top: 10px;">
+                        <a id="showgroup" href="/showrule/showRule" class="showli"
+                           style="height: 30px; text-decoration: none ;color: white;" target="change_iframe"> 查看规则
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+
+        <ul class="wul">
             <li style="width: 150px;padding: 10px; background-color: #1ab394;">
 {#                    <label style="height: 30px; color: white; margin: 15px;"> > </label>#}
                     <img src="/static/images/home.jpg" style="height: 13px; margin-left: 15px; opacity: 0.7">

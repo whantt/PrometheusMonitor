@@ -44,6 +44,7 @@ jobConfig = """
       - {{ file }}
 """
 
+
 def show(request):
     print 111
     return render(request, "addconfig/setconfig.html")
@@ -265,12 +266,12 @@ def makeConfig():
         alertmanagers_targets = pc[0].alertmanagers_targets
         rule_files_path = pc[0].rule_files_path
 
-        if not rule_files_path.endswith('/') :
-            rule_files_path = rule_files_path + '/'
+        if not rule_files_path.endswith('/'):
+            rule_files_path += '/'
 
         job_path = pc[0].job_path
-        if not job_path.endswith('/') :
-            job_path = job_path + '/'
+        if not job_path.endswith('/'):
+            job_path += '/'
 
         _config = modelConfig
         _config = _config.replace('{{ name }}', name)
