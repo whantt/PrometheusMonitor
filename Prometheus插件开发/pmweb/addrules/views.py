@@ -343,7 +343,7 @@ def updateRuleModel(request):
             rexper = rexpr.replace('$instance', _host['instance'])
 
             # 修改告警规则文件内容
-            rule = redis_fixed_text.replace('{{ name }}', rname)
+            rule = redis_fixed_text.replace('{{ name }}', alert)
             rule = rule.replace('{{ alert }}', alert)
             rule = rule.replace('{{ expr }}', rexper)
             rule = rule.replace('{{ for }}', rfortime)
@@ -354,9 +354,7 @@ def updateRuleModel(request):
             write_file(filenew, rule)
 
             # 修改数据库中存储信息
-            PrometheusRules.objects.filter(rid=rid).update(name=rname, service=rservice, fortime=rfortime, model=rmodel,
-                                                                 description=rdescription, level=rlevel,
-                                                           application=rapplication, expr=rexper, status='0')
+            PrometheusRules.objects.filter(rid=_host['rid']).update(name=alert, service=rservice, fortime=rfortime, model=rmodel,description=rdescription, level=rlevel,application=rapplication, expr=rexper, status='0')
         except Exception, e:
             print e
             continue

@@ -16,7 +16,7 @@
             <li style="margin: 4px">
                 <label>名称: </label>
                 <input id="rname" type="text" style="outline: none; margin: 1px; padding: 10px; width: 30%; height: 100%; border: 1px solid lightgrey" value="">
-                <button type="button" onclick="submitApp()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
+                <button type="button" onclick="submitRules()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
 
             </li>
             <li style="margin: 4px">
@@ -89,7 +89,7 @@
     });
 
 
-    function submitApp(){
+    function submitRules(){
         var name = $("#rname").val();
         var service = $("#rservice").val();
         var time = $("#rtime").val();
@@ -118,11 +118,11 @@
 
 
 
-    function submitRules(){
+    function submitApp(){
         var name = $("#appName").val();
         jQuery.ajax({
             type: "POST",
-            url: "addApplicaiton",
+            url: "addApplication",
             dataType: 'json',
             data: {"name": name},
             async: false,

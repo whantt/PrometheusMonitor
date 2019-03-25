@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'mymiddleware.SetCode',
     'showconfig',
     'addrules',
+    'showrules',
 ]
 
 MIDDLEWARE_CLASSES = [

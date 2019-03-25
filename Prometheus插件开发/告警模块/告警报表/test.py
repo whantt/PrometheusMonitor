@@ -20,7 +20,7 @@ name = 'report' + time.strftime('%Y%m%d',time.localtime(time.time())) + '.xls'
 
 
 def getDbResult():
-    conn = psycopg2.connect(host="172.16.24.196", port=5432, user="postgres", password="postgres", database="promethues")
+    conn = psycopg2.connect(host="", port=5432, user="postgres", password="postgres", database="promethues")
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     sql = "select content , count(*) from pending_messages where create_time > now() -interval '7 day' group by content order by 2 desc;"
     cur.execute(sql)
@@ -141,7 +141,7 @@ def sendmail():
     #创建一个带附件的实例
     message = MIMEMultipart()
     message['From'] = Header("wml@com.cn", 'utf-8')
-    message['To'] =  Header("SIPCLOUD告警统计", 'utf-8')
+    message['To'] =  Header("S*D告警统计", 'utf-8')
     subject = 'SIPCLOUD告警统计'
     message['Subject'] = Header(subject, 'utf-8')
 
@@ -157,7 +157,7 @@ def sendmail():
 
     try:
         smtp = smtplib.SMTP()
-        smtp.connect('smtp.ti-net.com.cn')
+        smtp.connect('smtp.*.cn')
         smtp.login('wml@com.cn', '')
         smtp.sendmail(sender, receivers, message.as_string())
         smtp.quit()

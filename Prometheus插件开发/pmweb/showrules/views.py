@@ -30,11 +30,11 @@ groups:
 
 
 def showModelRule(request):
-    return render(request, "showrules/showModelRule.html")
+    return render(request, "showRules/showModelRule.html")
 
 
 def showRule(request):
-    return render(request, "showrules/showRule.html")
+    return render(request, "showRules/showRule.html")
 
 
 def getAllRules(request):
