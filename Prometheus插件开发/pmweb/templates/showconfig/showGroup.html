@@ -161,7 +161,6 @@
 
     $(document).ready(function () {
         showGroupInfo(1);
-        page = 1;
     });
 
     function showGroupInfo(pageS){
@@ -199,23 +198,24 @@
                     htmlg = htmlg + '</tr>';
                 }
                 $("#groupinfos").html(htmlg);
-
+                var html = '<label>当前页:'+pageS+'</label>';
                 var uppage = 1;
                 var downpage = result['pages'];
-                if(page != 1){
-                    uppage = page -1;
+                if(pageS != 1){
+                    uppage = pageS -1;
+                    page = uppage;
                 }
-                if(page != downpage){
-                    downpage = page +1
+                if(pageS != downpage){
+                    downpage = pageS +1;
+                    page = downpage;
                 }
 
-
-                var html = '<a href="javascript:showGroupInfo(\''+ uppage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
+                html = html + '<a href="javascript:showGroupInfo('+ uppage +')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
 
                 for (var i=1 ; i<= result['pages']; i++){
-                    html = html + '<a href="javascript:showGroupInfo(\''+ i +'\')" style=" padding: 2px;color: black;">'+i+'</a>';
+                    html = html + '<a href="javascript:showGroupInfo('+ i +')" style=" padding: 2px;color: black;">'+i+'</a>';
                 }
-                html = html + '<a href="javascript:showGroupInfo(\''+ downpage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
+                html = html + '<a href="javascript:showGroupInfo('+ downpage +')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
                 $("#showpages").html(html);
 
             }

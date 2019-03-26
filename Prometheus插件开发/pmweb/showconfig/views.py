@@ -121,19 +121,36 @@ def showHostInfo(request):
     if request.method == 'POST':
         try:
             pageS = int(request.POST.get('page', '1'))
+            key_word = request.POST.get('key_word', '')
         except Exception, e:
             print e
             HttpResponse(json.dumps(u'查询失败'))
     else:
         HttpResponse(json.dumps(u'请发送POST请求!'))
 
-    ht = Host.objects.filter()
-    size = len(ht)
-
     start = 0 + (pageS - 1)*10
     end = 10 + (pageS - 1)*10
-    # gs = Group.objects.filter()[start:end]
-    ht = Host.objects.filter()[start:end]
+
+    if key_word == '':
+        ht = Host.objects.filter()
+        size = len(ht)
+        ht = Host.objects.filter()[start:end]
+    else:
+        ht = Host.objects.filter(groupid=key_word)
+        if len(ht) > 0:
+            size = len(ht)
+            ht = Host.objects.filter(groupid=key_word)[start:end]
+        else:
+            ht = Host.objects.filter(name__contains=key_word)
+            size = len(ht)
+            ht = Host.objects.filter(name__contains=key_word)[start:end]
+
+    # ht = Host.objects.filter()
+    # size = len(ht)
+    #
+    # start = 0 + (pageS - 1)*10
+    # end = 10 + (pageS - 1)*10
+    # ht = Host.objects.filter()[start:end]
     result = {}
     result['size'] = size
     if size%10 == 0:

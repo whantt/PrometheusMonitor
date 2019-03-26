@@ -57,22 +57,22 @@
 
 </style>
 
-<body style="height: 80%; width: 100%;">
+<body style="height: 90%; width: 100%;">
     <div style="height: 30px; width: 95%">
-        <button type="button" onclick="showGroupInfo()" style="float: right; border: 1px solid black;height: 34px; width: 50px; color: white;background-color: black">查询</button>
-        <input type="text" style="float: right; border: 1px solid lightgrey; height: 30px; width: 28%"  value=""/>
+        <button type="button" onclick="selectInfo()" style="outline: none; float: right; border: 1px solid black;height: 34px; width: 50px; color: white;background-color: black">查询</button>
+        <input id="keyword" type="text" style="outline: none; float: right; border: 1px solid lightgrey; height: 30px; width: 28%"  value=""/>
     </div>
 
     <div style="width: 100%; margin-top: 10px;">
         <table style="width: 95%; border-collapse:collapse; border-spacing: 0;" cellpadding="0" cellspacing="0">
             <thead>
                 <tr style="background-color: black; border-radius:10px;">
-                    <td width="18%" style="color: white;">实例</td>
+                    <td width="28%" style="color: white;">实例</td>
                     <td width="10%" style="color: white;">地址</td>
                     <td width="12%" style="color: white;">属组</td>
                     <td width="10%" style="color: white;">类型</td>
 {#                    <td width="10%" style="color: white;">接口地址</td>#}
-                    <td width="45%" style="color: white;">label</td>
+                    <td width="35%" style="color: white;">label</td>
                     <td width="5%" style="color: white;">操作</td>
                 </tr>
             </thead>
@@ -159,18 +159,25 @@
 <script>
 
     var page = 1;
+    var key_word = "";
 
     $(document).ready(function () {
         showGroupInfo(1);
-        page = 1;
     });
+
+
+    function selectInfo(){
+        key_word = $("#keyword").val();
+        page = 1;
+        showGroupInfo(page);
+    }
 
     function showGroupInfo(pageS){
         jQuery.ajax({
             type: "POST",
             url: "showHostInfo",
             dataType: 'json',
-            data: {"page": pageS},
+            data: {"page": pageS, "key_word": key_word},
             async: false,
             error: function () {
                 alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
@@ -189,33 +196,33 @@
                     value = value + ", '" + result['value'][index]['label'] + "'";
                     value = encodeURIComponent(value);
                     htmlg = htmlg + '<tr>';
-                    htmlg = htmlg + '<td width="18%"><a href="javascript:updateInFo(' + value + ')" style="color: grey; text-decoration: none">' + result['value'][index]['name'] + '</a></td>';
+                    htmlg = htmlg + '<td width="28%"><a href="javascript:updateInFo(' + value + ')" style="color: grey; text-decoration: none">' + result['value'][index]['name'] + '</a></td>';
                     htmlg = htmlg + '<td width="10%">' + result['value'][index]['instance'] + '</td>';
                     htmlg = htmlg + '<td width="12%">' + result['value'][index]['groupid'] + '</td>';
                     htmlg = htmlg + '<td width="10%">' + result['value'][index]['monitortype'] + '</td>';
-                    htmlg = htmlg + '<td width="45%">' + result['value'][index]['label'] + '</td>';
+                    htmlg = htmlg + '<td width="35%">' + result['value'][index]['label'] + '</td>';
 {#                    htmlg = htmlg + '<td width="40%">' + result['value'][index]['match'] + '</td>';#}
                     htmlg = htmlg + '<td width="5%"><button type="button" onclick="delHost(\''+result['value'][index]['hid']+'\')">删除</button></td>';
                     htmlg = htmlg + '</tr>';
                 }
                 $("#groupinfos").html(htmlg);
-
+                var html = '<label>当前页:'+pageS+'</label>';
                 var uppage = 1;
                 var downpage = result['pages'];
-                if(page != 1){
-                    uppage = page -1;
+                if(pageS != 1){
+                    uppage = pageS -1;
+                    page = uppage;
                 }
-                if(page != downpage){
-                    downpage = page +1
+                if(pageS != downpage){
+                    downpage = pageS +1;
+                    page = downpage;
                 }
-
-
-                var html = '<a href="javascript:showGroupInfo(\''+ uppage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
+                html = html + '<a href="javascript:showGroupInfo('+ uppage +')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">上一页</a>';
 
                 for (var i=1 ; i<= result['pages']; i++){
-                    html = html + '<a href="javascript:showGroupInfo(\''+ i +'\')" style=" padding: 2px;color: black;">'+i+'</a>';
+                    html = html + '<a href="javascript:showGroupInfo('+ i +')" style=" padding: 2px;color: black;">'+i+'</a>';
                 }
-                html = html + '<a href="javascript:showGroupInfo(\''+ downpage +'\')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
+                html = html + '<a href="javascript:showGroupInfo('+ downpage +')" style=" padding: 1px;background-color: black; color: white;text-decoration: none ;">下一页</a>';
                 $("#showpages").html(html);
 
             }
