@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'showconfig',
     'addrules',
     'showrules',
+    'netconfig',
 ]
 
 MIDDLEWARE_CLASSES = [

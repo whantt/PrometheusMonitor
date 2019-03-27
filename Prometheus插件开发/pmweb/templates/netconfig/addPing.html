@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="height: 70%; width: 100%; margin-top: 30px;">
+        <ul style="padding: 0; margin: 0; list-style: none">
+            <li style="margin: 4px">
+                <label style="color: grey">名称: </label>
+                <input id="pname" type="text" readonly="readonly" style="outline: none; margin: 1px; padding: 10px; width: 30%; height: 100%; border: 1px solid lightgrey" placeholder="   设置job名" value="check-ping">
+                <button type="button" onclick="addPConfig()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
+
+            </li>
+            <li style="margin: 4px">
+                <label style="color: grey">时间: </label>
+                <input id="ptime" type="text" style="outline: none; margin: 1px; padding: 10px; width: 20%; height: 100%; border: 1px solid lightgrey" placeholder="   设置监控时间间隔....(默认为全局参数)" value="">
+            </li>
+            <li style="margin: 4px">
+                <label style="color: grey">接口: </label>
+                <input id="puri" type="text" style="outline: none; margin: 1px; padding: 10px; width: 20%; height: 100%; border: 1px solid lightgrey" placeholder="   设置接口uri....(默认为/probe)" value="">
+            </li>
+            <li style="margin: 4px">
+                <label style="color: grey">地址: </label>
+                <input id="purl" type="text" style="outline: none; margin: 1px; padding: 10px; width: 70%; height: 100%; border: 1px solid lightgrey" placeholder="   设置blackbox_exports的地址" value="">
+            </li>
+
+        </ul>
+    </div>
+</body>
+<script src="/static/js/jquery-2.1.1.js"></script>
+
+<script>
+
+    //获取当前prometheus的配置信息
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "POST",
+            url: "getPConfig",
+            dataType: 'json',
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                var status = result['status'];
+                if(status == 1){
+                    $("#pname").val(result['name']);
+                    $("#ptime").val(result['interval']);
+                    $("#puri").val(result['uri']);
+                    $("#purl").val(result['url']);
+                }else if(status == 2 || status == 3){
+                    alert('数据加载异常,请稍后尝试或联系管理员');
+                }
+
+            }
+        })
+    });
+
+
+
+    function addPConfig() {
+        var name = $("#pname").val();
+        var interval = $("#ptime").val();
+        var uri = $("#puri").val();
+        var url = $("#purl").val();
+
+{#        alert(name + ' , ' + interval + ' , ' + uri + ' , ' + url);#}
+
+        //检查名字中是否含有特殊字符
+        if (checkQuote(name) || "" == name.trim()) {
+            alert("输入名为空或存在特殊字符!");
+            return;
+        }
+
+        //检查输入时间是否正确
+        var reg = /^[0-9]*[s|m]$/;
+        if (!reg.test(interval)) {
+            alert("请检查监控,匹配,超时时间格式!(时间+s,m,如3s或4m)");
+            return;
+        }
+
+        //检查url
+        if (checkURL(url) || "" == url) {
+            alert("url为空或参数格式存在问题!");
+            return;
+        }
+
+        var x = confirm("是否确认提交");
+        if (x == false) {
+            return;
+        }
+
+{#        alert(name + ' , ' + interval + ' , ' + uri + ' , ' + url);#}
+
+        jQuery.ajax({
+            type: "POST",
+            url: "addNConfig",
+            dataType: 'json',
+            data : {"name":name, "interval":interval, "uri":uri, "url":url},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result)
+            }
+        })
+    }
+
+    //判断是否含有特殊字符
+    function checkQuote(str) {
+        var items = new Array("~", "`", "!", "@", "#", "$", "%", "^", "&", "{", "}", "[", "]", "(", ")");
+        items.push(":", ";", "'", "|", "\\", "<", ">", "?", "/", "<<", ">>", "||", "/", "*", ",", ".");
+        //str = str.toLowerCase();
+        for (var i = 0; i < items.length; i++) {
+            if (str.indexOf(items[i]) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //检测url地址是否合法
+    function checkURL(str) {
+        str = 'http://' + str;
+        if (str.match(/(http[s]?|ftp):\/\/[^\/\.]+?..+\w$/i) == null) {
+            return true
+        }else {
+            return false;
+        }
+    }
+</script>
+</html>

@@ -5,6 +5,7 @@ from pmweb.settings import prometheusPath
 from addconfig.models import Group, Host, PrometheusConfig
 from addconfig.pathFunction import createHost, createGroup, updateHost, updateGroup, delHost
 from addrules.models import PrometheusApplication, PrometheusRules, PrometheusRulesModel
+from netconfig.models import PrometheusPing
 import datetime
 import random
 import json
@@ -248,4 +249,37 @@ def delHostInfo(request):
         rs += u'targets文件重新生成失败\n'
     if "" == rs:
         rs = u'删除成功'
+
+    flag = '1'
+    pp = PrometheusPing.objects.filter()
+    if len(pp) == 0:
+        flag = '0'
+    else:
+        flag = '1'
+
+    ht = Host.objects.filter()
+    _ping = []
+    _check = []
+    if '1' == flag:
+        for index in range(0, len(ht)):
+            phost = {}
+            _ip = []
+            ip = ht[index].instance.split(':')[0]
+            _ip.append(ip)
+            label = eval(ht[index].label)
+            name = ht[index].name
+            check = ip + name
+            if check in _check:
+                continue
+            else:
+                _check.append(check)
+            label['platform'] = ht[index].groupid
+            phost['targets'] = _ip
+            phost['labels'] = label
+            _ping.append(phost)
+    _file = pp[0].name
+    jobfile = job_path.replace(groupname, _file)
+    with open(jobfile, 'w')as f:
+        f.write(json.dumps(_ping, ensure_ascii=False))
+
     return HttpResponse(json.dumps(rs))

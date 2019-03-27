@@ -50,7 +50,7 @@ def addApplication(request):
 
             aid = 'A' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ''.join(str(random.choice(range(10))) for _ in range(10))
 
-            pa = PrometheusApplication(aid=aid,name=name)
+            pa = PrometheusApplication(aid=aid, name=name)
             pa.save()
 
             return HttpResponse(json.dumps(u'添加成功!'))
@@ -204,7 +204,8 @@ def addAllRules(request):
             save_list = []
             for i in range(0, len(ht)):
                 rname = name + ht[i].instance.replace('.', '').replace(':', '_')
-                rexper = exper.replace('$instance', ht[i].instance)
+                _ip = ht[i].instance.split(':')[0]
+                rexper = exper.replace('$instance', ht[i].instance).replace('$ip', _ip)
                 rid = 'R' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ''.join(str(random.choice(range(10))) for _ in range(10))
                 prs = PrometheusRules(rid=rid, name=rname, service=service, fortime=fortime, model=model, description=description,level=level,application=application,expr=rexper,hid=ht[i].hid, status='0',modelid=modeid)
                 # print ht[i].hid, ht[i].name, ht[i].instance, ht[i].groupid
@@ -215,7 +216,8 @@ def addAllRules(request):
             # 数据插入成功
             for i in range(0, len(ht)):
                 rname = name + ht[i].instance.replace('.', '').replace(':', '_') + '_rule'
-                rexper = exper.replace('$instance', ht[i].instance)
+                _ip = ht[i].instance.split(':')[0]
+                rexper = exper.replace('$instance', ht[i].instance).replace('$ip', _ip)
                 alert = name + ht[i].instance.replace('.', '').replace(':', '_')
                 filename = rule_path + ht[i].groupid + '/' + ht[i].name + '/' + rname + '.yml'
 
@@ -379,13 +381,9 @@ def submitClone(request):
     groupname = ht[0].groupid
     hostname = ht[0].name
 
-    print instance, groupname, hostname
-
     # 获取target信息
     ht = Host.objects.filter(hid=targets)
     tinstance = ht[0].instance
-
-    print tinstance
 
     # 获取所有目标的监控信息
     pr = PrometheusRules.objects.filter(hid=targets)
@@ -410,7 +408,9 @@ def submitClone(request):
         tsign = tinstance.replace('.', '').replace(':', '_')
         sign = instance.replace('.', '').replace(':', '_')
 
-        texpr = _host['expr'].replace(tinstance, instance)
+        _tip = tinstance.split(":")[0]
+        _ip = instance.split(":")[0]
+        texpr = _host['expr'].replace(tinstance, instance).replace(_tip, _ip)
         pr = PrometheusRules(rid=rid, name=_host['name'].replace(tsign, sign), service=_host['service'],
                              fortime=_host['fortime'], model=_host['model'], description=_host['description'],
                              level=_host['level'], application=_host['application'], expr=texpr, hid=host, status='0',

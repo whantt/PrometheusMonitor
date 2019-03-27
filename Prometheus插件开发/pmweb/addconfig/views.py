@@ -3,6 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from models import Group, Host, PrometheusConfig
 from pmweb.settings import prometheusPath
+from netconfig.models import PrometheusPing
 import datetime
 import random
 import json
@@ -42,6 +43,26 @@ jobConfig = """
     file_sd_configs:
     - files:
       - {{ file }}
+"""
+
+pingConfig = """
+  - job_name: '{{ job_name }}'
+    scrape_interval: {{ interval }}
+    metrics_path: '{{ uri }}'
+    params:
+      module: [icmp]
+
+    file_sd_configs:
+    - files:
+      - {{ path }}
+
+    relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: {{ url }}
 """
 
 
@@ -202,6 +223,13 @@ def addHConfig(request):
 
             os.system('mkdir -p ' + jobfile)
 
+            flag = '1'
+            pp = PrometheusPing.objects.filter()
+            if len(pp) == 0:
+                flag = '0'
+            else:
+                flag = '1'
+
             ht = Host.objects.filter(groupid=group)
             x = []
             for index in range(0, len(ht)):
@@ -214,6 +242,38 @@ def addHConfig(request):
 
             with open(jobfile + group + '.yml', 'w')as f:
                 f.write(json.dumps(x, ensure_ascii=False))
+
+            ht = Host.objects.filter()
+            _ping = []
+            _check = []
+            if '1' == flag:
+                for index in range(0, len(ht)):
+                    # host = {}
+                    # target_host = []
+                    # target_host.append(ht[index].instance)
+                    # host['targets'] = target_host
+                    # host['labels'] = eval(ht[index].label)
+                    # x.append(host)
+
+                    phost = {}
+                    _ip = []
+                    ip = ht[index].instance.split(':')[0]
+                    _ip.append(ip)
+                    label = eval(ht[index].label)
+                    name = ht[index].name
+                    check = ip + name
+                    if check in _check:
+                        continue
+                    else:
+                        _check.append(check)
+                    label['platform'] = ht[index].groupid
+                    phost['targets'] = _ip
+                    phost['labels'] = label
+                    _ping.append(phost)
+
+            _file = pp[0].name
+            with open(jobfile + _file + '.yml', 'w')as f:
+                f.write(json.dumps(_ping, ensure_ascii=False))
 
             return HttpResponse(json.dumps(u'添加成功'))
         except Exception, e:
@@ -386,8 +446,48 @@ def makeConfig():
 
         _config = _config.replace('{{ rule_files }}', rule_path)
 
+        _c = makePingConfig()
+
+        _config += '\n' + _c + '\n'
     except Exception, e:
         print e, u'配置文件信息替换错误'
         return modelConfig
     return _config
+
+
+def makePingConfig():
+    from netconfig.models import PrometheusPing
+    pp = PrometheusPing.objects.filter()
+    if len(pp) == 0:
+        return ''
+    else:
+        name = pp[0].name
+        interval = pp[0].interval
+        uri = pp[0].uri
+        url = pp[0].url
+
+    # 加载基础配置信息
+    pc = PrometheusConfig.objects.filter()
+    filepath = pc[0].job_path
+
+    if not filepath.endswith('/'):
+        filepath += '/'
+
+    # rulepath = pc[0].rule_files_path
+    # if not rulepath.endswith('/'):
+    #     rulepath += '/'
+
+    filepath += name + '.yml'
+    _config = pingConfig.replace('{{ job_name }}', name)
+    _config = _config.replace('{{ interval }}', interval)
+    _config = _config.replace('{{ uri }}', uri)
+    _config = _config.replace('{{ url }}', url)
+    _config = _config.replace('{{ path }}', filepath)
+
+    return _config
+
+
+
+
+
 
