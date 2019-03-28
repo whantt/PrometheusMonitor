@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'addrules',
     'showrules',
     'netconfig',
+    'alarmconfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -154,3 +155,4 @@ STATICFILES_DIRS = [
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static' ## 新增行
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
