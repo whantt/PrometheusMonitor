@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'showrules',
     'netconfig',
     'alarmconfig',
+    'mymiddleware',
+    'userconfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -72,6 +74,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mymiddleware.mymiddleware.QtsAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'pmweb.urls'
@@ -154,5 +157,5 @@ STATICFILES_DIRS = [
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static' ## 新增行
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = 'static' ## 新增行
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
