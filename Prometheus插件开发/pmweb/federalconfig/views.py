@@ -81,7 +81,7 @@ def updateFederal(request):
             for i in range(0, len(ht)):
                 hrs = {}
                 prs = {}
-                hrs['targets'] = ht[i].instance
+                hrs['targets'] = [ht[i].instance]
                 hrs['labels'] = eval(ht[i].label)
                 _hrs.append(hrs)
                 _ip = ht[i].instance.split(':')[0]
@@ -89,7 +89,7 @@ def updateFederal(request):
                 hostname = label['name']
                 if prs.has_key(_ip) and prs[_ip] == hostname:
                     continue
-                prs['targets'] = _ip
+                prs['targets'] = [_ip]
                 prs['labels'] = eval(ht[i].label)
                 prs['labels']['platform'] = g[j].name
                 prs['labels']['monitortype'] = 'ping'

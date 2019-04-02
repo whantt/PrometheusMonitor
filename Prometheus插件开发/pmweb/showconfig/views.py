@@ -267,11 +267,18 @@ def delHostInfo(request):
     else:
         flag = '1'
 
+    gp = Group.objects.filter(federalid='')
+    _listgroupname = []
+    for i in range(0, len(gp)):
+        _listgroupname.append(gp[i].name)
     ht = Host.objects.filter()
     _ping = []
     _check = []
     if '1' == flag:
         for index in range(0, len(ht)):
+            _groupname = ht[index].groupid
+            if _groupname not in _listgroupname:
+                continue
             phost = {}
             _ip = []
             ip = ht[index].instance.split(':')[0]

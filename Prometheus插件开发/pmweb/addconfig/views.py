@@ -259,11 +259,18 @@ def addHConfig(request):
             with open(jobfile + group + '.yml', 'w')as f:
                 f.write(json.dumps(x, ensure_ascii=False))
 
+            gp = Group.objects.filter(federalid='')
+            _listgroupname = []
+            for i in range(0, len(gp)):
+                _listgroupname.append(gp[i].name)
             ht = Host.objects.filter()
             _ping = []
             _check = []
             if '1' == flag:
                 for index in range(0, len(ht)):
+                    _groupname = ht[index].groupid
+                    if _groupname not in _listgroupname:
+                        continue
                     phost = {}
                     _ip = []
                     ip = ht[index].instance.split(':')[0]
@@ -364,12 +371,12 @@ def makeConfig():
             _host[ht[index].name] = _h
 
         # 加载组信息
-        gp = Group.objects.filter(federalid='')
+        gp = Group.objects.filter()
         # _group = []
         rule_path = ""
         jobs = ""
         for index in range(0, len(gp)):
-
+            federalid = gp[index].federalid
             for host in _host.keys():
                 if "" == rule_path:
                     if _host[host]['groupname'] == gp[index].name:
@@ -379,7 +386,7 @@ def makeConfig():
                         rule_path = rule_path + '\n  - ' + rule_files_path + gp[index].name + '/' + host + '/*.yml'
 
             # 修改job配置
-            if "" == jobs:
+            if "" == jobs and "" == federalid:
                 jobs = jobConfig.replace('{{ name }}', gp[index].name)
                 jobs = jobs.replace('{{ scrape_interval }}', scrape_interval)
 
@@ -402,7 +409,7 @@ def makeConfig():
                     match = match + '\n      match[]:'
                     for mc in gp[index].match.strip().split(','):
                         if "" != mc:
-                            match = match + "\n      - '" + mc + "'"
+                            match = match + "\n        - '" + mc + "'"
 
                     jobs = jobs.replace('{{ params }}', match)
                 else:
@@ -411,7 +418,7 @@ def makeConfig():
                 _file = job_path + gp[index].name + '.yml'
                 jobs = jobs.replace('{{ file }}', _file)
 
-            else:
+            elif "" != jobs and "" == federalid:
                 jobEx = jobConfig.replace('{{ name }}', gp[index].name)
                 jobEx = jobEx.replace('{{ scrape_interval }}', scrape_interval)
 
@@ -434,7 +441,7 @@ def makeConfig():
                     match = match + '\n      match[]:'
                     for mc in gp[index].match.strip().split(','):
                         if "" != mc:
-                            match = match + "\n      - '" + mc + "'"
+                            match = match + "\n        - '" + mc + "'"
 
                     jobEx = jobEx.replace('{{ params }}', match)
                 jobEx = jobEx.replace('{{ params }}', '')

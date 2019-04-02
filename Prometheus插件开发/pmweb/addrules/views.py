@@ -342,7 +342,7 @@ def updateRuleModel(request):
             filenew += rname + _host['instance'].replace('.', '').replace(':', '_') + '_rule.yml'
 
             alert = rname + _host['instance'].replace('.', '').replace(':', '_')
-            rexper = rexpr.replace('$instance', _host['instance'])
+            rexper = rexpr.replace('$instance', _host['instance']).replace('$ip', _host['instance'].split(':')[0])
 
             # 修改告警规则文件内容
             rule = redis_fixed_text.replace('{{ name }}', alert)
@@ -437,7 +437,10 @@ def submitClone(request):
         sign = instance.replace('.', '').replace(':', '_')
         rname = _host['name'].replace(tsign, sign)
         alert = rname
-        rexpr = _host['expr'].replace(tinstance, instance)
+        # rexpr = _host['expr'].replace(tinstance, instance)
+        _tip = tinstance.split(":")[0]
+        _ip = instance.split(":")[0]
+        rexpr = _host['expr'].replace(tinstance, instance).replace(_tip, _ip)
 
         filenew = _file + rname + '_rule.yml'
 
