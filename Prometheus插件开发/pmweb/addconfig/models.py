@@ -27,6 +27,7 @@ class Group(models.Model):
     insecure_skip_verify = models.CharField(max_length=100, verbose_name=u'忽略https证书验证')
     metrics_path = models.CharField(max_length=100, verbose_name=u'接口uri')
     match = models.CharField(max_length=1000, verbose_name=u'匹配')
+    federalid = models.CharField(max_length=100, verbose_name=u'联邦节点id')
 
     def __unicode__(self):
         return self.name

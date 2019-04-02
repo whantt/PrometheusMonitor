@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from models import Group, Host, PrometheusConfig
 from pmweb.settings import prometheusPath
 from netconfig.models import PrometheusPing
+from federalconfig.models import PrometheusFederal
 import datetime
 import random
 import json
@@ -67,12 +68,18 @@ pingConfig = """
 
 
 def show(request):
-    print 111
     return render(request, "addconfig/setconfig.html")
 
 
 def showGroup(request):
-    return render(request, "addconfig/setGroup.html")
+    pf = PrometheusFederal.objects.filter()
+    _list = []
+    for i in range(0, len(pf)):
+        rs = {}
+        rs['id'] = pf[i].id
+        rs['name'] = pf[i].name
+        _list.append(rs)
+    return render(request, "addconfig/setGroup.html", {'result': _list})
 
 
 def showHost(request):
@@ -148,6 +155,7 @@ def addGConfig(request):
             check = request.POST.get('check', '')
             match = request.POST.get('match', '')
             uri = request.POST.get('uri', '')
+            federalid = request.POST.get('federal', '').strip()
 
             if uri.strip() == '':
                 uri = '/metrics'
@@ -160,7 +168,7 @@ def addGConfig(request):
             if flag is False:
                 return HttpResponse(json.dumps(u'添加失败,组目录创建失败!'))
 
-            pc = Group(name=name, scrape_interval=interval, scheme=type, insecure_skip_verify=check, metrics_path=uri, match=match)
+            pc = Group(name=name, scrape_interval=interval, scheme=type, insecure_skip_verify=check, metrics_path=uri, match=match, federalid=federalid)
             pc.save()
 
             return HttpResponse(json.dumps(u'添加成功'))
@@ -203,7 +211,6 @@ def addHConfig(request):
 
                 # os.system('mkdir -p ' + path + group + '/' + name)
 
-
                 flag = createHost(name, group)
                 if flag is False:
                     break
@@ -222,6 +229,15 @@ def addHConfig(request):
                 jobfile += '/'
 
             os.system('mkdir -p ' + jobfile)
+
+            federal_status = 0
+            gp = Group.objects.filter(name=group)
+            for i in range(0, len(gp)):
+                if gp[i].federalid.strip() != '':
+                    federal_status = 1
+                    break
+            if federal_status == 1:
+                return HttpResponse(json.dumps(u'添加成功'))
 
             flag = '1'
             pp = PrometheusPing.objects.filter()
@@ -248,13 +264,6 @@ def addHConfig(request):
             _check = []
             if '1' == flag:
                 for index in range(0, len(ht)):
-                    # host = {}
-                    # target_host = []
-                    # target_host.append(ht[index].instance)
-                    # host['targets'] = target_host
-                    # host['labels'] = eval(ht[index].label)
-                    # x.append(host)
-
                     phost = {}
                     _ip = []
                     ip = ht[index].instance.split(':')[0]
@@ -355,19 +364,11 @@ def makeConfig():
             _host[ht[index].name] = _h
 
         # 加载组信息
-        gp = Group.objects.filter()
+        gp = Group.objects.filter(federalid='')
         # _group = []
         rule_path = ""
         jobs = ""
         for index in range(0, len(gp)):
-            # _g = {}
-            # _g['groupname']  = gp[index].name
-            # _g['groupinterval'] = gp[index].scrape_interval
-            # _g['groupscheme'] = gp[index].scheme
-            # _g['groupinsecure'] = gp[index].insecure_skip_verify
-            # _g['groupmetrics'] = gp[index].metrics_path
-            # _g['groupmatch'] = gp[index].match
-            # _group.append(_g)
 
             for host in _host.keys():
                 if "" == rule_path:

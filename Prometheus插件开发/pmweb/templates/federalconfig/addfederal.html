@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .title_td {
+        border: 1px solid lightgrey;
+        padding: 4px 5px 4px 5px;
+        height: 25px;
+        text-align: center;
+        font-size: 12px;
+        color: grey;
+    }
+    .content_td {
+        border: 1px solid lightgrey;
+        padding: 4px 5px 4px 5px;
+        height: 25px;
+        text-align: center;
+        font-size: 12px;
+        color: black;
+    }
+</style>
+<body style="">
+
+    <div style="height: 70%; width: 100%; margin-top: 30px;">
+        <form action="addfederal" method="POST">
+            <ul style="padding: 0; margin: 0; list-style: none">
+                <li style="margin: 4px">
+                    <label>名称: </label>
+                    <input name="fname" id="fname" type="text" style="outline: none; margin: 1px; padding: 10px; width: 30%; height: 100%; border: 1px solid lightgrey" value="">
+                    <button type="submit" onclick="submitFederal()" style="outline: none; background-color: #CCCCCC; color: white; width: 60px; height: 100%; padding: 9px">提交</button>
+                    <label style="color: red; font-size: 10px">{{ info }}</label>
+                </li>
+                <li style="margin: 4px">
+                    <label>地址: </label>
+                    <input name="furl" id="furl" type="text" style="outline: none; margin: 1px; padding: 10px; width: 70%; height: 100%; border: 1px solid lightgrey" value="">
+                </li>
+            </ul>
+        </form>
+    </div>
+
+    <div style="width: 100%; margin-top: 10px;">
+        <form id="dform" action="delFederal" method="POST">
+            <table style="width: 95%; border-collapse:collapse; border-spacing: 0;" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr  style="background-color: black; border-radius:10px;">
+                        <td class="title_td" width="25%" style="color: white;">id</td>
+                        <td class="title_td" width="25%" style="color: white;">名称</td>
+                        <td class="title_td" width="42%" style="color: white;">地址</td>
+                        <td class="title_td" width="8%" style="color: white;">操作</td>
+                    </tr>
+                </thead>
+                <tbody id="groupinfos">
+                <input name="fid" id="fid" value="" style="display: none">
+                {% for g in result %}
+                    <tr>
+                        <td class="content_td" width="25%">{{ g.id }}</td>
+                        <td class="content_td" width="25%">{{ g.name }}</td>
+                        <td class="content_td" width="42%">{{ g.url }}</td>
+                        <td class="content_td" width="8%"><a href="javascript:void(0)" onclick="delFederal('{{ g.id }}')">删除</a> | <a href="javascript:void(0)" onclick="updateFederal('{{ g.id }}')">刷新</a></td>
+                    </tr>
+    {#                <option style="text-align: center" value="{{ g.id }}"> {{ g.id }}</option>#}
+                {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+</body>
+
+<script src="/static/js/jquery-2.1.1.js"></script>
+
+<script>
+    function delFederal(fid){
+        $("#fid").val(fid);
+        $("#dform").submit();
+    }
+
+
+    function updateFederal(fid){
+        jQuery.ajax({
+            type: "POST",
+            url: "updateFederal",
+            dataType: 'json',
+            data : {"fid":fid},
+            async: false,
+            error: function () {
+                alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
+                return false;
+            },
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+</script>
+
+</html>

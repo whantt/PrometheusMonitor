@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^showrule/', include('showrules.urls')),
     url(r'^netconfig/', include('netconfig.urls')),
     url(r'^alarmconfig/', include('alarmconfig.urls')),
+    url(r'^federalconfig/', include('federalconfig.urls')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT,
         }),
 ]

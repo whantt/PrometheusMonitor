@@ -149,6 +149,21 @@
                 </ul>
             </li>
         </ul>
+        <ul class="wul">
+            <li style="width: 150px; padding: 10px ;list-style-type: none;" onmouseover="onColor(this)" onmouseout="outColor(this)">
+
+                <label style="height: 30px; color: white;margin: 15px;"> > </label>
+                <a href="javascript:changeSrc('addfederal')" style="height: 30px; text-decoration: none ;color: white;" target="change_iframe">联邦管理</a>
+
+                <ul id="addfederal" class="shows" style="margin-top: 10px; display: none; width: 120px;color: white; flex-direction: column;">
+                    <li style="margin: 0; padding-top: 10px;">
+                        <a id="showgroup" href="/federalconfig/tofederal" class="showli"
+                           style="height: 30px; text-decoration: none ;color: white;" target="change_iframe"> 添加联邦
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
 
 
         <ul class="wul">
@@ -162,9 +177,9 @@
 
     </div>
 
-    <div style="position: fixed; top: 60px; width: 100%; height: 30px;background-color: white; background-color: lightyellow;z-index: -10">
+    <div style="position: fixed; top: 60px; width: 100%; height: 30px;background-color: white; background-color: lightyellow;z-index: -10; border-bottom: 1px solid black">
         <div style="float: right; margin-right: 1%">
-            <label>欢迎{{ user }}大人</label>
+            <label>欢迎{{ user }}  </label>
             <a href="#">注销</a>
         </div>
     </div>

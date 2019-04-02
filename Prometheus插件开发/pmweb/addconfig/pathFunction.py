@@ -8,14 +8,6 @@ import json
 def createGroup(group):
     try:
         pc = PrometheusConfig.objects.filter()
-        # filePath = pc[0].job_path
-        # if not filePath.endswith('/'):
-        #     filePath += '/'
-        #     filePath += group
-        # else:
-        #     filePath += group
-        # os.system("mkdir -p " + filePath)
-
         rulePath = pc[0].rule_files_path
         if not rulePath.endswith('/'):
             rulePath += '/'

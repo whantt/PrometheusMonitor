@@ -13,7 +13,7 @@ import logging
 
 class QtsAuthenticationMiddleware(object):
     def process_request(self, request):
-        if request.path == '/login/' or request.path == '/load/':
+        if request.path == '/login/' or request.path == '/load/' or request.path.startswith('/static/'):
             pass
         else:
             if '' != request.session.get('userName') and None is not request.session.get('userName'):

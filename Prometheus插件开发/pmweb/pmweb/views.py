@@ -30,7 +30,6 @@ def checklogin(request):
         try:
             f = Forms(request.POST)
             if f.is_valid():
-                print(f.cleaned_data)
                 username = f.cleaned_data['username']
                 password = f.cleaned_data['password']
                 md = hashlib.md5()

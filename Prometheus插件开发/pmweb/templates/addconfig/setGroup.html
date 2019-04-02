@@ -49,6 +49,15 @@
         </select>
     </div>
 
+    <div style="position: absolute; top: 68%; left: 3%;  height: 8%; width: 20%">
+        <select id="gfederal" class="chosen-select" style="float: left; height: 100%; width: 70%; outline: none">
+            <option selected style="text-align: center" value="">选择联邦端点(默认为非联邦)</option>
+            {% for g in result %}
+                <option style="text-align: center" value="{{ g.id }}"> {{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
     <div style="position: absolute; top: 32%; left: 20%;  height: 40%; width: 78%">
         <label style="float: left; height: 20%;padding: 1px; border: 1px solid grey; background-color: grey; color: white">匹配规则:</label>
         <textarea id="groupMatch" style="float: left; height: 100%; width: 73%; border: 1px solid grey; outline: none;"
@@ -72,6 +81,7 @@
             var type = $("#groupType").val();
             var check = $("#groupCheck").val();
             var match = $("#groupMatch").val();
+            var federal = $("#gfederal").val();
 
             if('' == name.trim()){
                 alert('名字不能为空!');
@@ -95,14 +105,15 @@
                 type: "POST",
                 url: "addGConfig",
                 dataType: 'json',
-                data : {"name":name, "interval":interval, "uri":uri, "type":type, "check": check, "match": match},
+                data : {"name":name, "interval":interval, "uri":uri, "type":type, "check": check, "match": match, "federal": federal},
                 async: false,
                 error: function () {
                     alert("操作失败,请稍等片刻重新尝试,如仍有问题请联系管理员......");
                     return false;
                 },
                 success: function (result) {
-                    alert(result)
+                    alert(result);
+                    window.location.reload();
                 }
             })
         }

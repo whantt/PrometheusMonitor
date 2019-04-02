@@ -231,6 +231,16 @@ def delHostInfo(request):
         rs += u'数据库中主机信息删除失败\n'
         print e
 
+    # 如果删除的是联邦主机 则不需要重写本地文件
+    federal_status = 0
+    gp = Group.objects.filter(name=groupname)
+    for i in range(0, len(gp)):
+        if gp[i].federalid.strip() != '':
+            federal_status = 1
+            break
+    if federal_status == 1:
+        return HttpResponse(json.dumps(u'删除成功'))
+
     # 重新生成targets文件
     try:
         ht = Host.objects.filter(groupid=groupname)

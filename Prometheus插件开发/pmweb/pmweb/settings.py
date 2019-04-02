@@ -29,6 +29,10 @@ SECRET_KEY = 'w9el%dz&x8bc_8l92q4c=d7n0uhpsda9hn715wf^(2=#m#le@8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+SESSION_SAVE_EVERY_REQUEST = True         # 如果设置为True,django为每次request请求都保存session的内容，默认为False。
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True    # 会话cookie可以在用户浏览器中保持有效期。True：关闭浏览器，则Cookie失
+SESSION_COOKIE_AGE = 30*60                # 30分钟。
+
 ALLOWED_HOSTS = ['*']
 
 # 加载配置文件
@@ -63,6 +67,7 @@ INSTALLED_APPS = [
     'alarmconfig',
     'mymiddleware',
     'userconfig',
+    'federalconfig',
 ]
 
 MIDDLEWARE_CLASSES = [

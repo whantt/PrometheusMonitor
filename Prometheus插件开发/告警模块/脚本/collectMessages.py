@@ -61,10 +61,14 @@ class save_massages(threading.Thread):
             cur.execute(sql, (id, self.application, self.describetions, self.alert_job, '', self.keyword, self.monitortype, self.platform, -1, self.startat, self.alert_status, self.count, self.level, self.instance))
         else:
             for key in self.extend.keys():
-                if self.extend[key] == [] or key == 'other':
-                    continue
+                # if self.extend[key] == [] or key == 'other':
+                #     continue
                 id = 'SR' + time.strftime('%Y%m%d%H%M%S',time.localtime(time.time())) + ''.join(str(random.choice(range(10))) for _ in range(5))
-                cur.execute(sql, (id, self.application, self.describetions, self.alert_job, str(json.dumps(self.extend[key], ensure_ascii=False)).replace('"', "'"), self.keyword, self.monitortype, key, -1, self.startat, self.alert_status, self.count, self.level, self.instance))
+
+                if key == 'other':
+                    cur.execute(sql, (id, self.application, self.describetions, self.alert_job, str(json.dumps(self.extend[key], ensure_ascii=False)).replace('"', "'"), self.keyword, self.monitortype, self.platform, -1, self.startat, self.alert_status, self.count, self.level, self.instance))
+                else:
+                    cur.execute(sql, (id, self.application, self.describetions, self.alert_job, str(json.dumps(self.extend[key], ensure_ascii=False)).replace('"', "'"), self.keyword, self.monitortype, key, -1, self.startat, self.alert_status, self.count, self.level, self.instance))
 
         conn.commit()
         print "Records created successfully"
